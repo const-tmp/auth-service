@@ -9,18 +9,21 @@ import (
 	"auth/logger"
 	"auth/mgmt"
 	"auth/pkg/types"
+	svcsrv "auth/service"
 	user2 "auth/user"
 	"context"
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"fmt"
 	"github.com/go-kit/kit/log"
+	stdjwt "github.com/golang-jwt/jwt/v4"
 	"github.com/nullc4ts/bitmask_authz/authz"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"os"
 	"testing"
-	"time"
 )
 
 type testSuite struct {
@@ -30,6 +33,7 @@ type testSuite struct {
 	user  user2.Service
 	authz authz2.Service
 	mgmt  mgmt.Service
+	svc   svcsrv.Service
 	auth  auth.Service
 	jwt   jwt.Service
 }
@@ -61,30 +65,40 @@ func (s *testSuite) SetupSuite() {
 	)(authz2.New(db)),
 	)
 	s.mgmt = mgmt.New(logger.New("[ mgmt ]\t"), db)
-
-	s.Require().NoError(s.db.Debug().Migrator().DropTable(
-		&types.User{}, &types.Account{}, &types.Service{}, &types.Permission{},
-	))
-	s.Require().NoError(s.db.Debug().AutoMigrate(
-		&types.User{}, &types.Account{}, &types.Service{}, &types.Permission{},
-	))
+	s.svc = svcsrv.New(logger.New("[ service ]\t"), db)
 
 	var privateKey = make([]byte, 64)
 	_, err = rand.Read(privateKey)
 	s.Require().NoError(err)
 
-	//key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	//s.Require().NoError(err)
+	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	s.Require().NoError(err)
 
-	s.jwt = jwt.NewService(time.Minute*5, time.Hour*24, privateKey)
-	s.auth = auth.New(logger.New("[ auth ]\t"), s.user, s.authz, s.mgmt, s.acco, s.jwt)
+	s.jwt = jwt.New(
+		logger.New("[ jwt ]\t"),
+		stdjwt.SigningMethodES256,
+		[]string{stdjwt.SigningMethodES256.Name},
+		jwt.AccessClaimsFactory,
+		key,
+	)
+
+	s.auth = auth.New(logger.New("[ auth ]\t"), s.user, s.authz, s.mgmt, s.svc, s.acco, s.jwt)
+
+	tables, err := s.db.Migrator().GetTables()
+	s.Require().NoError(err)
+	for _, table := range tables {
+		s.Require().NoError(s.db.Debug().Migrator().DropTable(table))
+	}
+	s.Require().NoError(s.db.Debug().AutoMigrate(
+		&types.User{}, &types.Account{}, &types.Service{}, &types.Permission{},
+	))
 }
 
 func (s *testSuite) TestAuth() {
 	az := authz.New("read", "write")
 	var svc types.Service
 	s.Run("create service", func() {
-		sv, err := s.mgmt.Create(context.TODO(), "test")
+		sv, err := s.svc.Create(context.TODO(), "test")
 		s.Require().NoError(err)
 		svc = sv
 	})
@@ -130,113 +144,13 @@ func (s *testSuite) TestAuth() {
 					s.Require().NoError(err)
 					s.T().Log(t.AccessToken)
 					s.T().Log(t.RefreshToken)
-					claims, token, valid, err := s.jwt.VerifyAccessToken(t.AccessToken)
+					claims, err := s.jwt.VerifyAccessToken(t.AccessToken)
 					s.Require().NoError(err)
-					s.Require().True(valid)
 					s.T().Log(claims)
-					s.T().Log(token)
 				})
 			}
 		}
 	}
-}
-func (s *testSuite) TestAccount() {
-	//s.Run("services", func() {
-	//	var svcs []types.Service
-	//	s.Run("create", func() {
-	//		svc := types.Service{
-	//			Name: fmt.Sprintf("service 1"),
-	//		}
-	//		s.Require().NoError(s.db.Debug().Create(&svc).Error)
-	//		s.T().Logf("%+v", svc)
-	//		svcs = append(svcs, svc)
-	//	})
-	//
-	//	s.Run("permissions", func() {
-	//		for _, service := range svcs {
-	//			for n, a := range authz.New("active", "read", "write").ByName() {
-	//				s.Require().NoError(s.db.Debug().Create(&types.Permission{
-	//					ServiceID: service.ID,
-	//					Name:      n,
-	//					Access:    a,
-	//				}).Error)
-	//			}
-	//		}
-	//	})
-	//})
-	//
-	s.Run("create", func() {
-		res, err := s.acco.Create(context.TODO())
-		s.Require().NoError(err)
-		s.T().Logf("%+v", res)
-	})
-	s.Run("create name", func() {
-		res, err := s.acco.CreateWithName(context.TODO(), "test")
-		s.Require().NoError(err)
-		s.T().Logf("%+v", res)
-	})
-	s.Run("get all", func() {
-		res, err := s.acco.GetAll(context.TODO())
-		s.Require().NoError(err)
-		s.T().Logf("%+v", res)
-	})
-	s.Run("get by name", func() {
-		res, err := s.acco.Get(context.TODO(), types.Account{Name: "test"})
-		s.Require().NoError(err)
-		s.T().Logf("%+v", res)
-	})
-	s.Run("get by id", func() {
-		res, err := s.acco.Get(context.TODO(), types.Account{Model: gorm.Model{ID: 1}})
-		s.Require().NoError(err)
-		s.T().Logf("%+v", res)
-	})
-	s.Run("update", func() {
-		res, err := s.acco.Update(context.TODO(), types.Account{Model: gorm.Model{ID: 2}, Name: "test test"})
-		s.Require().NoError(err)
-		s.T().Logf("%+v", res)
-	})
-	s.Run("get by name", func() {
-		res, err := s.acco.Get(context.TODO(), types.Account{Name: "test test"})
-		s.Require().NoError(err)
-		s.T().Logf("%+v", res)
-	})
-	s.Run("get all", func() {
-		res, err := s.acco.GetAll(context.TODO())
-		s.Require().NoError(err)
-		s.T().Logf("%+v", res)
-	})
-	s.Run("get by name", func() {
-		res, err := s.acco.Get(context.TODO(), types.Account{Name: "test"})
-		s.T().Logf("%+v", res)
-		s.T().Logf("%+v", err)
-		s.Require().Error(err)
-	})
-
-	/*	s.Run("get service", func() {
-			svc := types.Service{}
-			s.Require().NoError(s.db.Debug().
-				Preload("Permissions").
-				Preload("Accounts").
-				First(&svc, 1).Error)
-			s.T().Logf("%+v", svc)
-		})
-		s.Run("get service", func() {
-			svc := types.Service{}
-			s.Require().NoError(s.db.Debug().
-				Preload("Permissions").
-				Preload("Accounts").
-				First(&svc, 1).Error)
-			s.T().Logf("%+v", svc)
-		})
-	*/
-	var testUser types.User
-
-	s.Run("create user", func() {
-		u, err := s.user.CreateWithLoginPassword(context.TODO(), "test", "test")
-		s.Require().NoError(err)
-		testUser = u
-		s.T().Logf("%+v", testUser)
-	})
 }
 
 func (s *testSuite) TestService() {
@@ -244,7 +158,7 @@ func (s *testSuite) TestService() {
 	var testServices []types.Service
 	for i := 0; i < 5; i++ {
 		s.Run(fmt.Sprint("create service", i+1), func() {
-			v, err := s.mgmt.Create(context.TODO(), fmt.Sprint("service", i+1))
+			v, err := s.svc.Create(context.TODO(), fmt.Sprint("service", i+1))
 			s.Require().NoError(err)
 			s.T().Logf("%+v", v)
 			testServices = append(testServices, v)
@@ -347,10 +261,10 @@ func (s *testSuite) TestService() {
 func (s *testSuite) TestPermissions() {
 	az := authz.New("active", "read", "write", "admin", "root")
 
-	svc, err := s.mgmt.Create(context.TODO(), "svc1")
+	svc, err := s.svc.Create(context.TODO(), "svc1")
 	s.Require().NoError(err)
 
-	svc, err = s.mgmt.GetService(context.TODO(), svc)
+	svc, err = s.svc.Get(context.TODO(), svc)
 	s.Require().NoError(err)
 	s.T().Log(svc)
 
@@ -376,3 +290,9 @@ func (s *testSuite) TestInterface() {
 	var _ user2.Repo = u
 	var _ user2.Service = u
 }
+
+//func TestECDSA(t *testing.T) {
+//	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+//	require.NoError(t, err)
+//
+//}

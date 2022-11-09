@@ -8,11 +8,11 @@ import (
 )
 
 type Service interface {
-	Create(ctx context.Context, name string) (types.Service, error)
-	GetServices(ctx context.Context) ([]types.Service, error)
-	GetService(ctx context.Context, svc types.Service) (types.Service, error)
 	AttachAccountToService(ctx context.Context, serviceID, accountID uint) (bool, error)
 	RemoveAccountFromService(ctx context.Context, serviceID, accountID uint) (bool, error)
+	GetUserPermissions(ctx context.Context, userID uint) (permissions []types.Permission, err error)
+	AddUserPermission(ctx context.Context, p types.Permission, userID uint) (ok bool, err error)
+	RemoveUserPermission(ctx context.Context, permID, userID uint) (ok bool, err error)
 }
 
 type service struct {
@@ -24,28 +24,30 @@ func New(l *log.Logger, db *gorm.DB) Service {
 	return &service{l: l, db: db}
 }
 
-func (s service) Create(ctx context.Context, name string) (types.Service, error) {
-	s.l.Println("Create", name)
-	v := types.Service{Name: name}
-	err := s.db.Debug().WithContext(ctx).Create(&v).Error
-	return v, err
+func (s service) GetUserPermissions(ctx context.Context, userID uint) (permissions []types.Permission, err error) {
+	err = s.db.Debug().WithContext(ctx).
+		Model(&types.User{Model: gorm.Model{ID: userID}}).
+		Association("Permissions").
+		Find(&permissions)
+	return
 }
 
-func (s service) GetServices(ctx context.Context) ([]types.Service, error) {
-	s.l.Println("GetServices")
-	var v []types.Service
-	err := s.db.Debug().WithContext(ctx).Find(&v).Error
-	return v, err
+func (s service) AddUserPermission(ctx context.Context, p types.Permission, userID uint) (ok bool, err error) {
+	err = s.db.Debug().WithContext(ctx).
+		Model(&types.User{Model: gorm.Model{ID: userID}}).
+		Association("Permissions").
+		Append(&p)
+	ok = err == nil
+	return
 }
 
-func (s service) GetService(ctx context.Context, svc types.Service) (types.Service, error) {
-	s.l.Println("GetService", svc)
-	var v types.Service
-	err := s.db.Debug().WithContext(ctx).
-		Where(&svc).
-		Preload("Permissions").
-		First(&v).Error
-	return v, err
+func (s service) RemoveUserPermission(ctx context.Context, permID, userID uint) (ok bool, err error) {
+	err = s.db.Debug().WithContext(ctx).
+		Model(&types.User{Model: gorm.Model{ID: userID}}).
+		Association("Permissions").
+		Delete(&types.Permission{Model: gorm.Model{ID: permID}})
+	ok = err == nil
+	return
 }
 
 func (s service) AttachAccountToService(ctx context.Context, serviceID uint, accountID uint) (bool, error) {

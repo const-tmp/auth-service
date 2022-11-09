@@ -7,6 +7,7 @@ import (
 	"auth/mgmt"
 	"auth/pkg/password"
 	"auth/pkg/types"
+	svcsrv "auth/service"
 	"auth/user"
 	"context"
 	"errors"
@@ -27,12 +28,13 @@ type service struct {
 	user    user.Service
 	authz   authz.Service
 	mgmt    mgmt.Service
+	svc     svcsrv.Service
 	account account.Repo
 	jwt     jwt.Service
 }
 
-func New(logger *log.Logger, user user.Service, authz authz.Service, mgmt mgmt.Service, account account.Repo, jwt jwt.Service) Service {
-	return &service{logger: logger, user: user, authz: authz, mgmt: mgmt, account: account, jwt: jwt}
+func New(logger *log.Logger, user user.Service, authz authz.Service, mgmt mgmt.Service, svc svcsrv.Service, account account.Repo, jwt jwt.Service) Service {
+	return &service{logger: logger, user: user, authz: authz, mgmt: mgmt, svc: svc, account: account, jwt: jwt}
 }
 
 func (s service) Register(ctx context.Context, login, password, service string, accountID uint) (bool, error) {
@@ -71,7 +73,7 @@ func (s service) Register(ctx context.Context, login, password, service string, 
 
 	if service != "" {
 		var svc types.Service
-		svc, err = s.mgmt.GetService(ctx, types.Service{Name: service})
+		svc, err = s.svc.Get(ctx, types.Service{Name: service})
 		if err != nil {
 			s.logger.Println("get service error:", err)
 			return false, err
@@ -110,7 +112,7 @@ func (s service) Login(ctx context.Context, login, pass, service string) (types.
 		return types.AccessToken{}, BadCreds
 	}
 
-	svc, err := s.mgmt.GetService(ctx, types.Service{Name: service})
+	svc, err := s.svc.Get(ctx, types.Service{Name: service})
 	if err != nil {
 		s.logger.Println("get service error:", err)
 		return types.AccessToken{}, err
