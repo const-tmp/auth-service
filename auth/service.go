@@ -13,6 +13,7 @@ import (
 	"github.com/nullc4ts/bitmask_authz/access"
 	"gorm.io/gorm"
 	"log"
+	"time"
 )
 
 // @microgen middleware, logging, http, recovering, error-logging
@@ -126,11 +127,12 @@ func (s service) Login(ctx context.Context, login, pass, service string) (types.
 	}
 	s.logger.Println("user", u.ID, service, "permissions:", ac)
 
-	at, rt, err := s.jwt.GenerateTokens(u.ID, u.AccountID, ac, svc.Code.String())
+	at, err := s.jwt.AccessToken(u.ID, u.AccountID, ac, []string{svc.Name}, time.Minute*5)
+
 	if err != nil {
 		s.logger.Println("jwt error:", err)
 		return types.AccessToken{}, err
 	}
 
-	return types.AccessToken{AccessToken: at, RefreshToken: rt}, nil
+	return types.AccessToken{AccessToken: at}, nil
 }
