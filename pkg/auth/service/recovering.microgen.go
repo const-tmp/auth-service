@@ -3,7 +3,7 @@
 package service
 
 import (
-	service "auth/auth"
+	service "auth/pkg/auth"
 	types "auth/pkg/types"
 	"context"
 	"fmt"
@@ -53,4 +53,14 @@ func (M recoveringMiddleware) PublicKey(ctx context.Context) (pub []byte, err er
 		}
 	}()
 	return M.next.PublicKey(ctx)
+}
+
+func (M recoveringMiddleware) GetPermissionsForService(ctx context.Context, name string) (permissions []*types.Permission, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			M.logger.Log("method", "GetPermissionsForService", "message", r)
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return M.next.GetPermissionsForService(ctx, name)
 }

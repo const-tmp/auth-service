@@ -2,7 +2,7 @@
 
 package service
 
-import service "auth/mgmt"
+import service "auth/pkg/mgmt"
 
 // Service middleware (closure).
 type Middleware func(service.Service) service.Service

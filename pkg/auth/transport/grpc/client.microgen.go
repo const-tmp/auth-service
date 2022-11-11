@@ -3,14 +3,21 @@
 package transportgrpc
 
 import (
-	pb "auth/auth/proto"
-	transport "auth/auth/transport"
+	pb "auth/pkg/auth/proto"
+	transport "auth/pkg/auth/transport"
 	grpckit "github.com/go-kit/kit/transport/grpc"
 	grpc "google.golang.org/grpc"
 )
 
 func NewGRPCClient(conn *grpc.ClientConn, addr string, opts ...grpckit.ClientOption) transport.EndpointsSet {
 	return transport.EndpointsSet{
+		GetPermissionsForServiceEndpoint: grpckit.NewClient(
+			conn, addr, "GetPermissionsForService",
+			_Encode_GetPermissionsForService_Request,
+			_Decode_GetPermissionsForService_Response,
+			pb.GetPermissionsForServiceResponse{},
+			opts...,
+		).Endpoint(),
 		LoginEndpoint: grpckit.NewClient(
 			conn, addr, "Login",
 			_Encode_Login_Request,

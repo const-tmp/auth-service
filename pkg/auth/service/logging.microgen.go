@@ -3,7 +3,7 @@
 package service
 
 import (
-	service "auth/auth"
+	service "auth/pkg/auth"
 	types "auth/pkg/types"
 	"context"
 	log "github.com/go-kit/kit/log"
@@ -72,6 +72,19 @@ func (M loggingMiddleware) PublicKey(arg0 context.Context) (res0 []byte, res1 er
 	return M.next.PublicKey(arg0)
 }
 
+func (M loggingMiddleware) GetPermissionsForService(arg0 context.Context, arg1 string) (res0 []*types.Permission, res1 error) {
+	defer func(begin time.Time) {
+		M.logger.Log(
+			"method", "GetPermissionsForService",
+			"message", "GetPermissionsForService called",
+			"request", logGetPermissionsForServiceRequest{Name: arg1},
+			"response", logGetPermissionsForServiceResponse{Permissions: res0},
+			"err", res1,
+			"took", time.Since(begin))
+	}(time.Now())
+	return M.next.GetPermissionsForService(arg0, arg1)
+}
+
 type (
 	logRegisterRequest struct {
 		Login     string
@@ -92,5 +105,11 @@ type (
 	}
 	logPublicKeyResponse struct {
 		Pub []byte
+	}
+	logGetPermissionsForServiceRequest struct {
+		Name string
+	}
+	logGetPermissionsForServiceResponse struct {
+		Permissions []*types.Permission
 	}
 )

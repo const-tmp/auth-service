@@ -4,15 +4,15 @@
 package transportgrpc
 
 import (
-	pb "auth/mgmt/proto"
-	transport "auth/mgmt/transport"
+	pb "auth/pkg/mgmt/proto"
+	transport "auth/pkg/mgmt/transport"
 	grpc "github.com/go-kit/kit/transport/grpc"
 	empty "github.com/golang/protobuf/ptypes/empty"
 	context "golang.org/x/net/context"
 )
 
 type serviceServer struct {
-	pb.UnimplementedServiceServer
+	pb.UnimplementedMgmtServer
 	createUserWithLoginPassword grpc.Handler
 	createUserWithTelegram      grpc.Handler
 	getAllUsers                 grpc.Handler
@@ -41,7 +41,7 @@ type serviceServer struct {
 	removeUserPermission        grpc.Handler
 }
 
-func NewGRPCServer(endpoints *transport.EndpointsSet, opts ...grpc.ServerOption) pb.ServiceServer {
+func NewGRPCServer(endpoints *transport.EndpointsSet, opts ...grpc.ServerOption) pb.MgmtServer {
 	return &serviceServer{
 		addUserPermission: grpc.NewServer(
 			endpoints.AddUserPermissionEndpoint,

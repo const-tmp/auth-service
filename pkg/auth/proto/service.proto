@@ -7,38 +7,54 @@ package auth;
 import "google/protobuf/empty.proto";
 
 service Service {
-    rpc Register (RegisterRequest) returns (RegisterResponse);
-    rpc Login (LoginRequest) returns (LoginResponse);
-    rpc PublicKey (google.protobuf.Empty) returns (PublicKeyResponse);
+  rpc Register (RegisterRequest) returns (RegisterResponse);
+  rpc Login (LoginRequest) returns (LoginResponse);
+  rpc PublicKey (google.protobuf.Empty) returns (PublicKeyResponse);
+  rpc GetPermissionsForService (GetPermissionsForServiceRequest) returns (GetPermissionsForServiceResponse);
 }
 
 message RegisterRequest {
-    string login = 1;
-    string password = 2;
-    string service = 3;
-    uint32 account_id = 4;
+  string login = 1;
+  string password = 2;
+  string service = 3;
+  uint32 account_id = 4;
 }
 
 message RegisterResponse {
-    bool ok = 1;
+  bool ok = 1;
 }
 
 message LoginRequest {
-    string login = 1;
-    string password = 2;
-    string service = 3;
+  string login = 1;
+  string password = 2;
+  string service = 3;
 }
 
 message LoginResponse {
-    AccessToken token = 1;
+  AccessToken token = 1;
 }
 
 message AccessToken{
-    string access_token = 1;
+  string access_token = 1;
 }
 
 message PublicKeyRequest {}
 
 message PublicKeyResponse {
-    bytes pub = 1;
+  bytes pub = 1;
+}
+
+message GetPermissionsForServiceRequest {
+  string name = 1;
+}
+
+message GetPermissionsForServiceResponse {
+  repeated Permission permissions = 1;
+}
+
+message Permission {
+  uint32 id = 1;
+  string name = 2;
+  uint64 access = 3;
+  uint32 service_id = 4;
 }

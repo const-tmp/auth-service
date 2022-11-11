@@ -29,4 +29,11 @@ type (
 	PublicKeyResponse struct {
 		Pub []byte `json:"pub"`
 	}
+
+	GetPermissionsForServiceRequest struct {
+		Name string `json:"name"`
+	}
+	GetPermissionsForServiceResponse struct {
+		Permissions []*types.Permission `json:"permissions"`
+	}
 )

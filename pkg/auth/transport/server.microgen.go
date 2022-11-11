@@ -3,16 +3,17 @@
 package transport
 
 import (
-	auth "auth/auth"
+	auth "auth/pkg/auth"
 	"context"
 	endpoint "github.com/go-kit/kit/endpoint"
 )
 
 func Endpoints(svc auth.Service) EndpointsSet {
 	return EndpointsSet{
-		LoginEndpoint:     LoginEndpoint(svc),
-		PublicKeyEndpoint: PublicKeyEndpoint(svc),
-		RegisterEndpoint:  RegisterEndpoint(svc),
+		GetPermissionsForServiceEndpoint: GetPermissionsForServiceEndpoint(svc),
+		LoginEndpoint:                    LoginEndpoint(svc),
+		PublicKeyEndpoint:                PublicKeyEndpoint(svc),
+		RegisterEndpoint:                 RegisterEndpoint(svc),
 	}
 }
 
@@ -36,5 +37,13 @@ func PublicKeyEndpoint(svc auth.Service) endpoint.Endpoint {
 	return func(arg0 context.Context, request interface{}) (interface{}, error) {
 		res0, res1 := svc.PublicKey(arg0)
 		return &PublicKeyResponse{Pub: res0}, res1
+	}
+}
+
+func GetPermissionsForServiceEndpoint(svc auth.Service) endpoint.Endpoint {
+	return func(arg0 context.Context, request interface{}) (interface{}, error) {
+		req := request.(*GetPermissionsForServiceRequest)
+		res0, res1 := svc.GetPermissionsForService(arg0, req.Name)
+		return &GetPermissionsForServiceResponse{Permissions: res0}, res1
 	}
 }

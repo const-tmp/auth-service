@@ -54,3 +54,15 @@ func (set EndpointsSet) PublicKey(arg0 context.Context) (res0 []byte, res1 error
 	}
 	return response.(*PublicKeyResponse).Pub, res1
 }
+
+func (set EndpointsSet) GetPermissionsForService(arg0 context.Context, arg1 string) (res0 []*types.Permission, res1 error) {
+	request := GetPermissionsForServiceRequest{Name: arg1}
+	response, res1 := set.GetPermissionsForServiceEndpoint(arg0, &request)
+	if res1 != nil {
+		if e, ok := status.FromError(res1); ok || e.Code() == codes.Internal || e.Code() == codes.Unknown {
+			res1 = errors.New(e.Message())
+		}
+		return
+	}
+	return response.(*GetPermissionsForServiceResponse).Permissions, res1
+}

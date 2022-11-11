@@ -1,5 +1,5 @@
 //go:generate protoc --proto_path=proto --go_out=proto --go_opt=paths=source_relative --go-grpc_out=proto --go-grpc_opt=paths=source_relative proto/service.proto
-//go:generate microgen -file service.go -package auth/auth -out . -pb-go proto/service.pb.go -main
+//go:generate microgen -file service.go -package auth/pkg/auth -out . -pb-go proto/service.pb.go -main
 
 package auth
 
@@ -12,6 +12,7 @@ import (
 	"auth/pkg/types"
 	"context"
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 	"log"
@@ -24,12 +25,21 @@ type Service interface {
 	Register(ctx context.Context, login, password, service string, accountId uint32) (ok bool, err error)
 	Login(ctx context.Context, login, password, service string) (token *types.AccessToken, err error)
 	PublicKey(ctx context.Context) (pub []byte, err error)
+	GetPermissionsForService(ctx context.Context, name string) (permissions []*types.Permission, err error)
 }
 
 type service struct {
 	logger *log.Logger
 	mgmt   mgmt.Service
 	jwt    jwt.Service
+}
+
+func (s service) GetPermissionsForService(ctx context.Context, name string) (permissions []*types.Permission, err error) {
+	svc, err := s.mgmt.GetService(ctx, &types.Service{Name: name})
+	if err != nil {
+		return nil, fmt.Errorf("get service error: %w", err)
+	}
+	return s.mgmt.GetFilteredPermissions(ctx, &types.Permission{ServiceID: svc.ID})
 }
 
 func New(logger *log.Logger, mgmt mgmt.Service, jwt jwt.Service) Service {

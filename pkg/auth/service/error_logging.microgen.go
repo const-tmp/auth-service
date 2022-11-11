@@ -3,7 +3,7 @@
 package service
 
 import (
-	service "auth/auth"
+	service "auth/pkg/auth"
 	types "auth/pkg/types"
 	"context"
 	log "github.com/go-kit/kit/log"
@@ -49,4 +49,13 @@ func (M errorLoggingMiddleware) PublicKey(ctx context.Context) (pub []byte, err 
 		}
 	}()
 	return M.next.PublicKey(ctx)
+}
+
+func (M errorLoggingMiddleware) GetPermissionsForService(ctx context.Context, name string) (permissions []*types.Permission, err error) {
+	defer func() {
+		if err != nil {
+			M.logger.Log("method", "GetPermissionsForService", "message", err)
+		}
+	}()
+	return M.next.GetPermissionsForService(ctx, name)
 }

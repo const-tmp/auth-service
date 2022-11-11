@@ -3,8 +3,8 @@
 package service
 
 import (
-	service "auth/mgmt"
 	access "auth/pkg/access"
+	service "auth/pkg/mgmt"
 	types "auth/pkg/types"
 	"context"
 	log "github.com/go-kit/kit/log"

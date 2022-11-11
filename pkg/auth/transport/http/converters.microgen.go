@@ -45,6 +45,12 @@ func _Decode_PublicKey_Request(_ context.Context, r *http.Request) (interface{},
 	return &req, err
 }
 
+func _Decode_GetPermissionsForService_Request(_ context.Context, r *http.Request) (interface{}, error) {
+	var req transport.GetPermissionsForServiceRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	return &req, err
+}
+
 func _Decode_Register_Response(_ context.Context, r *http.Response) (interface{}, error) {
 	var resp transport.RegisterResponse
 	err := json.NewDecoder(r.Body).Decode(&resp)
@@ -59,6 +65,12 @@ func _Decode_Login_Response(_ context.Context, r *http.Response) (interface{}, e
 
 func _Decode_PublicKey_Response(_ context.Context, r *http.Response) (interface{}, error) {
 	var resp transport.PublicKeyResponse
+	err := json.NewDecoder(r.Body).Decode(&resp)
+	return &resp, err
+}
+
+func _Decode_GetPermissionsForService_Response(_ context.Context, r *http.Response) (interface{}, error) {
+	var resp transport.GetPermissionsForServiceResponse
 	err := json.NewDecoder(r.Body).Decode(&resp)
 	return &resp, err
 }
@@ -78,6 +90,11 @@ func _Encode_PublicKey_Request(ctx context.Context, r *http.Request, request int
 	return CommonHTTPRequestEncoder(ctx, r, request)
 }
 
+func _Encode_GetPermissionsForService_Request(ctx context.Context, r *http.Request, request interface{}) error {
+	r.URL.Path = path.Join(r.URL.Path, "get-permissions-for-service")
+	return CommonHTTPRequestEncoder(ctx, r, request)
+}
+
 func _Encode_Register_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return CommonHTTPResponseEncoder(ctx, w, response)
 }
@@ -87,5 +104,9 @@ func _Encode_Login_Response(ctx context.Context, w http.ResponseWriter, response
 }
 
 func _Encode_PublicKey_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	return CommonHTTPResponseEncoder(ctx, w, response)
+}
+
+func _Encode_GetPermissionsForService_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return CommonHTTPResponseEncoder(ctx, w, response)
 }

@@ -5,6 +5,7 @@
 package transportgrpc
 
 import (
+	"auth/pkg/access"
 	pb "auth/pkg/auth/proto"
 	types "auth/pkg/types"
 )
@@ -23,4 +24,30 @@ func ListByteToProto(pub []byte) ([]byte, error) {
 
 func ProtoToListByte(protoPub []byte) ([]byte, error) {
 	return protoPub, nil
+}
+
+func ListPtrTypesPermissionToProto(permissions []*types.Permission) ([]*pb.Permission, error) {
+	res := make([]*pb.Permission, 0, len(permissions))
+	for _, permission := range permissions {
+		res = append(res, &pb.Permission{
+			Id:        permission.ID,
+			Name:      permission.Name,
+			Access:    uint64(permission.Access),
+			ServiceId: permission.ServiceID,
+		})
+	}
+	return res, nil
+}
+
+func ProtoToListPtrTypesPermission(protoPermissions []*pb.Permission) ([]*types.Permission, error) {
+	res := make([]*types.Permission, 0, len(protoPermissions))
+	for _, permission := range protoPermissions {
+		res = append(res, &types.Permission{
+			Model:     types.Model{ID: permission.Id},
+			ServiceID: permission.ServiceId,
+			Name:      permission.Name,
+			Access:    access.Access(permission.Access),
+		})
+	}
+	return res, nil
 }

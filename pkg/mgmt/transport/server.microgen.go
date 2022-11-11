@@ -3,7 +3,7 @@
 package transport
 
 import (
-	mgmt "auth/mgmt"
+	mgmt "auth/pkg/mgmt"
 	"context"
 	endpoint "github.com/go-kit/kit/endpoint"
 )

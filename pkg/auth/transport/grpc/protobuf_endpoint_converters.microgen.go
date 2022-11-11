@@ -40,6 +40,14 @@ func _Encode_PublicKey_Request(ctx context.Context, request interface{}) (interf
 	return &empty.Empty{}, nil
 }
 
+func _Encode_GetPermissionsForService_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil GetPermissionsForServiceRequest")
+	}
+	req := request.(*transport.GetPermissionsForServiceRequest)
+	return &pb.GetPermissionsForServiceRequest{Name: req.Name}, nil
+}
+
 func _Encode_Register_Response(ctx context.Context, response interface{}) (interface{}, error) {
 	if response == nil {
 		return nil, errors.New("nil RegisterResponse")
@@ -72,6 +80,18 @@ func _Encode_PublicKey_Response(ctx context.Context, response interface{}) (inte
 	return &pb.PublicKeyResponse{Pub: respPub}, nil
 }
 
+func _Encode_GetPermissionsForService_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil GetPermissionsForServiceResponse")
+	}
+	resp := response.(*transport.GetPermissionsForServiceResponse)
+	respPermissions, err := ListPtrTypesPermissionToProto(resp.Permissions)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetPermissionsForServiceResponse{Permissions: respPermissions}, nil
+}
+
 func _Decode_Register_Request(ctx context.Context, request interface{}) (interface{}, error) {
 	if request == nil {
 		return nil, errors.New("nil RegisterRequest")
@@ -99,6 +119,14 @@ func _Decode_Login_Request(ctx context.Context, request interface{}) (interface{
 
 func _Decode_PublicKey_Request(ctx context.Context, request interface{}) (interface{}, error) {
 	return &empty.Empty{}, nil
+}
+
+func _Decode_GetPermissionsForService_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil GetPermissionsForServiceRequest")
+	}
+	req := request.(*pb.GetPermissionsForServiceRequest)
+	return &transport.GetPermissionsForServiceRequest{Name: string(req.Name)}, nil
 }
 
 func _Decode_Register_Response(ctx context.Context, response interface{}) (interface{}, error) {
@@ -131,4 +159,16 @@ func _Decode_PublicKey_Response(ctx context.Context, response interface{}) (inte
 		return nil, err
 	}
 	return &transport.PublicKeyResponse{Pub: respPub}, nil
+}
+
+func _Decode_GetPermissionsForService_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil GetPermissionsForServiceResponse")
+	}
+	resp := response.(*pb.GetPermissionsForServiceResponse)
+	respPermissions, err := ProtoToListPtrTypesPermission(resp.Permissions)
+	if err != nil {
+		return nil, err
+	}
+	return &transport.GetPermissionsForServiceResponse{Permissions: respPermissions}, nil
 }

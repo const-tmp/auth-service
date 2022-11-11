@@ -3,7 +3,7 @@
 package transporthttp
 
 import (
-	transport "auth/mgmt/transport"
+	transport "auth/pkg/mgmt/transport"
 	http "github.com/go-kit/kit/transport/http"
 	mux "github.com/gorilla/mux"
 	http1 "net/http"

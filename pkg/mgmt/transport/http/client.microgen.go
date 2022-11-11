@@ -3,7 +3,7 @@
 package transporthttp
 
 import (
-	transport "auth/mgmt/transport"
+	transport "auth/pkg/mgmt/transport"
 	httpkit "github.com/go-kit/kit/transport/http"
 	"net/url"
 )

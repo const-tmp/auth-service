@@ -3,13 +3,19 @@
 package transporthttp
 
 import (
-	transport "auth/auth/transport"
+	transport "auth/pkg/auth/transport"
 	httpkit "github.com/go-kit/kit/transport/http"
 	"net/url"
 )
 
 func NewHTTPClient(u *url.URL, opts ...httpkit.ClientOption) transport.EndpointsSet {
 	return transport.EndpointsSet{
+		GetPermissionsForServiceEndpoint: httpkit.NewClient(
+			"POST", u,
+			_Encode_GetPermissionsForService_Request,
+			_Decode_GetPermissionsForService_Response,
+			opts...,
+		).Endpoint(),
 		LoginEndpoint: httpkit.NewClient(
 			"POST", u,
 			_Encode_Login_Request,

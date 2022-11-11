@@ -2,12 +2,12 @@
 package main
 
 import (
-	auth "auth/auth"
 	proto "auth/auth/proto"
-	service "auth/auth/service"
-	transport "auth/auth/transport"
-	grpc "auth/auth/transport/grpc"
-	http "auth/auth/transport/http"
+	auth "auth/pkg/auth"
+	service "auth/pkg/auth/service"
+	transport "auth/pkg/auth/transport"
+	grpc "auth/pkg/auth/transport/grpc"
+	http "auth/pkg/auth/transport/http"
 	"context"
 	"errors"
 	"fmt"

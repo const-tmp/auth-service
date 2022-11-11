@@ -12,7 +12,8 @@ type ManyToManyStreamEndpoint func(stream interface{}) error
 type ManyToOneStreamEndpoint func(stream interface{}) error
 
 type EndpointsSet struct {
-	RegisterEndpoint  endpoint.Endpoint
-	LoginEndpoint     endpoint.Endpoint
-	PublicKeyEndpoint endpoint.Endpoint
+	RegisterEndpoint                 endpoint.Endpoint
+	LoginEndpoint                    endpoint.Endpoint
+	PublicKeyEndpoint                endpoint.Endpoint
+	GetPermissionsForServiceEndpoint endpoint.Endpoint
 }
