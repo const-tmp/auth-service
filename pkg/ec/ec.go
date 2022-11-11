@@ -1,11 +1,11 @@
 package ec
 
 import (
-	"auth/pkg/logger"
 	"crypto/ecdsa"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"github.com/nullc4t/auth-service/pkg/logger"
 )
 
 var l = logger.New("[ EC ]\t")

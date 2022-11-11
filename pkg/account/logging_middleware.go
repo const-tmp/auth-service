@@ -1,8 +1,8 @@
 package account
 
 import (
-	"auth/pkg/types"
 	"context"
+	"github.com/nullc4t/auth-service/pkg/types"
 	"log"
 )
 

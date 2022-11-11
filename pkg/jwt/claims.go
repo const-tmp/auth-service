@@ -1,9 +1,9 @@
 package jwt
 
 import (
-	"auth/pkg/access"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/nullc4t/auth-service/pkg/access"
 	"time"
 )
 

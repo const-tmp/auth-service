@@ -2,7 +2,7 @@
 
 package transport
 
-import types "auth/pkg/types"
+import types "github.com/nullc4t/auth-service/pkg/types"
 
 type (
 	RegisterRequest struct {

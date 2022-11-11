@@ -4,11 +4,11 @@
 package transportgrpc
 
 import (
-	pb "auth/pkg/mgmt/proto"
-	transport "auth/pkg/mgmt/transport"
 	"context"
 	"errors"
 	empty "github.com/golang/protobuf/ptypes/empty"
+	pb "github.com/nullc4t/auth-service/pkg/mgmt/proto"
+	transport "github.com/nullc4t/auth-service/pkg/mgmt/transport"
 )
 
 func _Encode_CreateUserWithLoginPassword_Request(ctx context.Context, request interface{}) (interface{}, error) {

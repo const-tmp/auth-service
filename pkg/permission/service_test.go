@@ -1,11 +1,10 @@
 package permission
 
 import (
-	"auth/logger"
-	svcsrv "auth/pkg/service"
-	"auth/pkg/types"
 	"context"
 	"fmt"
+	svcsrv "github.com/nullc4t/auth-service/pkg/service"
+	"github.com/nullc4t/auth-service/pkg/types"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

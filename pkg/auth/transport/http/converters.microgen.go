@@ -4,10 +4,10 @@
 package transporthttp
 
 import (
-	transport "auth/pkg/auth/transport"
 	"bytes"
 	"context"
 	"encoding/json"
+	transport "github.com/nullc4t/auth-service/pkg/auth/transport"
 	"io/ioutil"
 	"net/http"
 	"path"

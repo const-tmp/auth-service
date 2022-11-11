@@ -1,9 +1,9 @@
 package types
 
 import (
-	"auth/pkg/access"
 	"github.com/gofrs/uuid"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/nullc4t/auth-service/pkg/access"
 	"time"
 
 	"gorm.io/gorm"

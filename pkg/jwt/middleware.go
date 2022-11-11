@@ -1,13 +1,13 @@
 package jwt
 
 import (
-	"auth/pkg/access"
-	"auth/pkg/logger"
 	"context"
 	"errors"
 	kitjwt "github.com/go-kit/kit/auth/jwt"
 	"github.com/go-kit/kit/endpoint"
 	stdjwt "github.com/golang-jwt/jwt/v4"
+	"github.com/nullc4t/auth-service/pkg/access"
+	"github.com/nullc4t/auth-service/pkg/logger"
 )
 
 var (

@@ -1,13 +1,13 @@
 package main
 
 import (
-	"auth/pkg/access"
-	"auth/pkg/mgmt"
-	"auth/pkg/mgmt/proto"
-	transportgrpc "auth/pkg/mgmt/transport/grpc"
-	"auth/pkg/types"
 	"context"
 	"fmt"
+	"github.com/nullc4t/auth-service/pkg/access"
+	"github.com/nullc4t/auth-service/pkg/mgmt"
+	"github.com/nullc4t/auth-service/pkg/mgmt/proto"
+	transportgrpc "github.com/nullc4t/auth-service/pkg/mgmt/transport/grpc"
+	"github.com/nullc4t/auth-service/pkg/types"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

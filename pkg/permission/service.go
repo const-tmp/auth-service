@@ -1,10 +1,10 @@
 package permission
 
 import (
-	"auth/pkg/access"
-	"auth/pkg/logger"
-	"auth/pkg/types"
 	"context"
+	"github.com/nullc4t/auth-service/pkg/access"
+	"github.com/nullc4t/auth-service/pkg/logger"
+	"github.com/nullc4t/auth-service/pkg/types"
 
 	"gorm.io/gorm"
 	"log"

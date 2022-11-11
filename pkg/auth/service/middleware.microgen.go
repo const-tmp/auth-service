@@ -2,7 +2,7 @@
 
 package service
 
-import service "auth/pkg/auth"
+import service "github.com/nullc4t/auth-service/pkg/auth"
 
 // Service middleware (closure).
 type Middleware func(service.Service) service.Service

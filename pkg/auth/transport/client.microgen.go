@@ -3,9 +3,9 @@
 package transport
 
 import (
-	types "auth/pkg/types"
 	"context"
 	"errors"
+	types "github.com/nullc4t/auth-service/pkg/types"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 )

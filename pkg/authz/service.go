@@ -1,7 +1,7 @@
 package authz
 
 //import (
-//	"auth/pkg/types"
+//	"github.com/nullc4t/auth-service/pkg/types"
 //	"context"
 //	"gorm.io/gorm"
 //)

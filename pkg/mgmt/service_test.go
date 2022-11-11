@@ -1,14 +1,11 @@
 package mgmt
 
 import (
-	"auth/account"
-	"auth/logger"
-	"auth/permission"
-	svcsrv "auth/pkg/service"
-	"auth/pkg/types"
-	user2 "auth/pkg/user"
 	"context"
 	"fmt"
+	svcsrv "github.com/nullc4t/auth-service/pkg/service"
+	"github.com/nullc4t/auth-service/pkg/types"
+	user2 "github.com/nullc4t/auth-service/pkg/user"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

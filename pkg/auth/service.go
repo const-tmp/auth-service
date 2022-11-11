@@ -4,15 +4,15 @@
 package auth
 
 import (
-	"auth/pkg/access"
-	"auth/pkg/ec"
-	"auth/pkg/jwt"
-	"auth/pkg/mgmt"
-	password2 "auth/pkg/password"
-	"auth/pkg/types"
 	"context"
 	"errors"
 	"fmt"
+	"github.com/nullc4t/auth-service/pkg/access"
+	"github.com/nullc4t/auth-service/pkg/ec"
+	"github.com/nullc4t/auth-service/pkg/jwt"
+	"github.com/nullc4t/auth-service/pkg/mgmt"
+	password2 "github.com/nullc4t/auth-service/pkg/password"
+	"github.com/nullc4t/auth-service/pkg/types"
 
 	"gorm.io/gorm"
 	"log"

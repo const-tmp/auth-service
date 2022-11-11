@@ -3,8 +3,8 @@
 package transport
 
 import (
-	access "auth/pkg/access"
-	types "auth/pkg/types"
+	access "github.com/nullc4t/auth-service/pkg/access"
+	types "github.com/nullc4t/auth-service/pkg/types"
 )
 
 type (

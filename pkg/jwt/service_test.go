@@ -1,7 +1,6 @@
 package jwt
 
 import (
-	"auth/logger"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"

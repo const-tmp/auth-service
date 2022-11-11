@@ -1,11 +1,11 @@
 package jwt
 
 import (
-	"auth/pkg/access"
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/nullc4t/auth-service/pkg/access"
 	"log"
 	"time"
 )

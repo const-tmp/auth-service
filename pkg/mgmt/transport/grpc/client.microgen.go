@@ -3,9 +3,9 @@
 package transportgrpc
 
 import (
-	pb "auth/pkg/mgmt/proto"
-	transport "auth/pkg/mgmt/transport"
 	grpckit "github.com/go-kit/kit/transport/grpc"
+	pb "github.com/nullc4t/auth-service/pkg/mgmt/proto"
+	transport "github.com/nullc4t/auth-service/pkg/mgmt/transport"
 	grpc "google.golang.org/grpc"
 )
 

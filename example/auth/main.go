@@ -1,13 +1,13 @@
 package main
 
 import (
-	"auth/pkg/access"
-	"auth/pkg/auth/proto"
-	authgrpc "auth/pkg/auth/transport/grpc"
-	jwtservice "auth/pkg/jwt"
-	"auth/pkg/logger"
 	"context"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/nullc4t/auth-service/pkg/access"
+	"github.com/nullc4t/auth-service/pkg/auth/proto"
+	authgrpc "github.com/nullc4t/auth-service/pkg/auth/transport/grpc"
+	jwtservice "github.com/nullc4t/auth-service/pkg/jwt"
+	"github.com/nullc4t/auth-service/pkg/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

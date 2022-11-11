@@ -3,11 +3,11 @@
 package service
 
 import (
-	access "auth/pkg/access"
-	service "auth/pkg/mgmt"
-	types "auth/pkg/types"
 	"context"
 	log "github.com/go-kit/kit/log"
+	access "github.com/nullc4t/auth-service/pkg/access"
+	service "github.com/nullc4t/auth-service/pkg/mgmt"
+	types "github.com/nullc4t/auth-service/pkg/types"
 )
 
 // ErrorLoggingMiddleware writes to logger any error, if it is not nil.

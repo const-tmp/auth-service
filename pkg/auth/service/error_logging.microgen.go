@@ -3,10 +3,10 @@
 package service
 
 import (
-	service "auth/pkg/auth"
-	types "auth/pkg/types"
 	"context"
 	log "github.com/go-kit/kit/log"
+	service "github.com/nullc4t/auth-service/pkg/auth"
+	types "github.com/nullc4t/auth-service/pkg/types"
 )
 
 // ErrorLoggingMiddleware writes to logger any error, if it is not nil.

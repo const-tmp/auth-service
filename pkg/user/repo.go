@@ -1,10 +1,10 @@
 package user
 
 import (
-	"auth/pkg/password"
-	"auth/pkg/types"
 	"context"
 	"fmt"
+	"github.com/nullc4t/auth-service/pkg/password"
+	"github.com/nullc4t/auth-service/pkg/types"
 	"gorm.io/gorm"
 )
 

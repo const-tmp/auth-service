@@ -4,14 +4,14 @@
 package mgmt
 
 import (
-	"auth/pkg/access"
-	"auth/pkg/account"
-	"auth/pkg/permission"
-	svcsrv "auth/pkg/service"
-	"auth/pkg/types"
-	"auth/pkg/user"
 	"context"
 	"fmt"
+	"github.com/nullc4t/auth-service/pkg/access"
+	"github.com/nullc4t/auth-service/pkg/account"
+	"github.com/nullc4t/auth-service/pkg/permission"
+	svcsrv "github.com/nullc4t/auth-service/pkg/service"
+	"github.com/nullc4t/auth-service/pkg/types"
+	"github.com/nullc4t/auth-service/pkg/user"
 	"gorm.io/gorm"
 	"log"
 )

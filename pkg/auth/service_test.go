@@ -1,14 +1,6 @@
 package auth
 
 import (
-	"auth/account"
-	"auth/jwt"
-	"auth/logger"
-	"auth/mgmt"
-	"auth/permission"
-	svcsrv "auth/pkg/service"
-	"auth/pkg/types"
-	user3 "auth/pkg/user"
 	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
@@ -16,6 +8,14 @@ import (
 	"crypto/x509"
 	"fmt"
 	stdjwt "github.com/golang-jwt/jwt/v4"
+	"github.com/nullc4t/auth-service/pkg/account"
+	"github.com/nullc4t/auth-service/pkg/jwt"
+	"github.com/nullc4t/auth-service/pkg/logger"
+	"github.com/nullc4t/auth-service/pkg/mgmt"
+	"github.com/nullc4t/auth-service/pkg/permission"
+	svcsrv "github.com/nullc4t/auth-service/pkg/service"
+	"github.com/nullc4t/auth-service/pkg/types"
+	user3 "github.com/nullc4t/auth-service/pkg/user"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -70,6 +70,7 @@ func (s *testSuite) SetupSuite() {
 		[]string{stdjwt.SigningMethodES256.Name},
 		jwt.AccessClaimsFactory,
 		key,
+		&key.PublicKey,
 	)
 
 	s.auth = New(logger.New("[ auth ]\t"), mgm, j)

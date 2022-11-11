@@ -3,12 +3,12 @@
 package service
 
 import (
-	access "auth/pkg/access"
-	service "auth/pkg/mgmt"
-	types "auth/pkg/types"
 	"context"
 	"fmt"
 	log "github.com/go-kit/kit/log"
+	access "github.com/nullc4t/auth-service/pkg/access"
+	service "github.com/nullc4t/auth-service/pkg/mgmt"
+	types "github.com/nullc4t/auth-service/pkg/types"
 )
 
 // RecoveringMiddleware recovers panics from method calls, writes to provided logger and returns the error of panic as method error.

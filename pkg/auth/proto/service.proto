@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "auth/auth/proto;proto";
+option go_package = "github.com/nullc4t/auth-serviceauth/proto;proto";
 
 package auth;
 

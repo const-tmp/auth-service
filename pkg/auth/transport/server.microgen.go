@@ -3,9 +3,9 @@
 package transport
 
 import (
-	auth "auth/pkg/auth"
 	"context"
 	endpoint "github.com/go-kit/kit/endpoint"
+	auth "github.com/nullc4t/auth-service/pkg/auth"
 )
 
 func Endpoints(svc auth.Service) EndpointsSet {

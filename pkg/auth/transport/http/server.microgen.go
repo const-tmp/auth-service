@@ -3,9 +3,9 @@
 package transporthttp
 
 import (
-	transport "auth/pkg/auth/transport"
 	http "github.com/go-kit/kit/transport/http"
 	mux "github.com/gorilla/mux"
+	transport "github.com/nullc4t/auth-service/pkg/auth/transport"
 	http1 "net/http"
 )
 

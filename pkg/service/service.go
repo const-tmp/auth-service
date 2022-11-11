@@ -1,8 +1,8 @@
 package service
 
 import (
-	"auth/pkg/types"
 	"context"
+	"github.com/nullc4t/auth-service/pkg/types"
 	"gorm.io/gorm"
 	"log"
 )

@@ -1,11 +1,11 @@
 package account
 
 import (
-	"auth/logger"
-	"auth/mgmt"
-	"auth/pkg/types"
 	"context"
 	"fmt"
+	"github.com/nullc4t/auth-service/pkg/logger"
+	"github.com/nullc4t/auth-service/pkg/mgmt"
+	"github.com/nullc4t/auth-service/pkg/types"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

@@ -4,11 +4,11 @@
 package transportgrpc
 
 import (
-	pb "auth/pkg/auth/proto"
-	transport "auth/pkg/auth/transport"
 	"context"
 	"errors"
 	empty "github.com/golang/protobuf/ptypes/empty"
+	pb "github.com/nullc4t/auth-service/pkg/auth/proto"
+	transport "github.com/nullc4t/auth-service/pkg/auth/transport"
 )
 
 func _Encode_Register_Request(ctx context.Context, request interface{}) (interface{}, error) {

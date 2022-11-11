@@ -5,9 +5,9 @@
 package transportgrpc
 
 import (
-	"auth/pkg/access"
-	pb "auth/pkg/auth/proto"
-	types "auth/pkg/types"
+	"github.com/nullc4t/auth-service/pkg/access"
+	pb "github.com/nullc4t/auth-service/pkg/auth/proto"
+	types "github.com/nullc4t/auth-service/pkg/types"
 )
 
 func PtrTypesAccessTokenToProto(token *types.AccessToken) (*pb.AccessToken, error) {
