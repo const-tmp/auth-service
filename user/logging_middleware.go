@@ -11,7 +11,7 @@ type loggingMiddleware struct {
 	next Service
 }
 
-func (l loggingMiddleware) SetAccount(ctx context.Context, userID, accID uint) (bool, error) {
+func (l loggingMiddleware) SetAccount(ctx context.Context, userID, accID uint32) (bool, error) {
 	l.l.Println("Method: SetAccount\tArgs:", userID, accID)
 	res, err := l.next.SetAccount(ctx, userID, accID)
 	if err != nil {
@@ -26,7 +26,7 @@ func NewLoggingMiddleware(l *log.Logger, next Service) Service {
 	return &loggingMiddleware{l: l, next: next}
 }
 
-func (l loggingMiddleware) Block(ctx context.Context, userID uint) (bool, error) {
+func (l loggingMiddleware) Block(ctx context.Context, userID uint32) (bool, error) {
 	l.l.Println("Method: Block\tArgs:", userID)
 	res, err := l.next.Block(ctx, userID)
 	if err != nil {
@@ -37,7 +37,7 @@ func (l loggingMiddleware) Block(ctx context.Context, userID uint) (bool, error)
 	return res, err
 }
 
-func (l loggingMiddleware) Unblock(ctx context.Context, userID uint) (bool, error) {
+func (l loggingMiddleware) Unblock(ctx context.Context, userID uint32) (bool, error) {
 	l.l.Println("Method: Unblock\tArgs:", userID)
 	res, err := l.next.Unblock(ctx, userID)
 	if err != nil {
@@ -48,7 +48,7 @@ func (l loggingMiddleware) Unblock(ctx context.Context, userID uint) (bool, erro
 	return res, err
 }
 
-func (l loggingMiddleware) CreateWithLoginPassword(ctx context.Context, login, pass string) (types.User, error) {
+func (l loggingMiddleware) CreateWithLoginPassword(ctx context.Context, login, pass string) (*types.User, error) {
 	l.l.Println("Method: CreateWithLoginPassword\tArgs:", login, pass)
 	res, err := l.next.CreateWithLoginPassword(ctx, login, pass)
 	if err != nil {
@@ -59,7 +59,7 @@ func (l loggingMiddleware) CreateWithLoginPassword(ctx context.Context, login, p
 	return res, err
 }
 
-func (l loggingMiddleware) CreateWithTelegram(ctx context.Context, id uint64, name, userN string) (types.User, error) {
+func (l loggingMiddleware) CreateWithTelegram(ctx context.Context, id uint64, name, userN string) (*types.User, error) {
 	l.l.Println("Method: CreateWithTelegram\tArgs:", id, name, userN)
 	res, err := l.next.CreateWithTelegram(ctx, id, name, userN)
 	if err != nil {
@@ -70,7 +70,7 @@ func (l loggingMiddleware) CreateWithTelegram(ctx context.Context, id uint64, na
 	return res, err
 }
 
-func (l loggingMiddleware) GetAll(ctx context.Context) ([]types.User, error) {
+func (l loggingMiddleware) GetAll(ctx context.Context) ([]*types.User, error) {
 	l.l.Println("Method: GetAll\tArgs:")
 	res, err := l.next.GetAll(ctx)
 	if err != nil {
@@ -81,7 +81,7 @@ func (l loggingMiddleware) GetAll(ctx context.Context) ([]types.User, error) {
 	return res, err
 }
 
-func (l loggingMiddleware) Get(ctx context.Context, user types.User) (types.User, error) {
+func (l loggingMiddleware) Get(ctx context.Context, user types.User) (*types.User, error) {
 	l.l.Println("Method: Get\tArgs:", user)
 	res, err := l.next.Get(ctx, user)
 	if err != nil {
@@ -92,7 +92,7 @@ func (l loggingMiddleware) Get(ctx context.Context, user types.User) (types.User
 	return res, err
 }
 
-func (l loggingMiddleware) Update(ctx context.Context, user types.User) (types.User, error) {
+func (l loggingMiddleware) Update(ctx context.Context, user types.User) (*types.User, error) {
 	l.l.Println("Method: Update\tArgs:", user)
 	res, err := l.next.Update(ctx, user)
 	if err != nil {

@@ -32,7 +32,7 @@ func (s *testSuite) SetupSuite() {
 	s.Require().NoError(err)
 	s.db = db
 	s.acco = NewLoggingMiddleware(
-		logger.New("[ account service ]\t"),
+		logger.New("[ account auth ]\t"),
 		New(db),
 	)
 	s.mgmt = mgmt.New(logger.New("[ mgmt ]\t"), db)
@@ -58,22 +58,22 @@ func (s *testSuite) TestAccount() {
 		s.T().Logf("%+v", res)
 	})
 	s.Run("get by name", func() {
-		res, err := s.acco.Get(context.TODO(), types.Account{Name: "test"})
+		res, err := s.acco.Get(context.TODO(), &types.Account{Name: "test"})
 		s.Require().NoError(err)
 		s.T().Logf("%+v", res)
 	})
 	s.Run("get by id", func() {
-		res, err := s.acco.Get(context.TODO(), types.Account{Model: gorm.Model{ID: 1}})
+		res, err := s.acco.Get(context.TODO(), &types.Account{Model: types.Model{ID: 1}})
 		s.Require().NoError(err)
 		s.T().Logf("%+v", res)
 	})
 	s.Run("update", func() {
-		res, err := s.acco.Update(context.TODO(), types.Account{Model: gorm.Model{ID: 2}, Name: "test test"})
+		res, err := s.acco.Update(context.TODO(), &types.Account{Model: types.Model{ID: 2}, Name: "test test"})
 		s.Require().NoError(err)
 		s.T().Logf("%+v", res)
 	})
 	s.Run("get by name", func() {
-		res, err := s.acco.Get(context.TODO(), types.Account{Name: "test test"})
+		res, err := s.acco.Get(context.TODO(), &types.Account{Name: "test test"})
 		s.Require().NoError(err)
 		s.T().Logf("%+v", res)
 	})
@@ -83,7 +83,7 @@ func (s *testSuite) TestAccount() {
 		s.T().Logf("%+v", res)
 	})
 	s.Run("get by name", func() {
-		res, err := s.acco.Get(context.TODO(), types.Account{Name: "test"})
+		res, err := s.acco.Get(context.TODO(), &types.Account{Name: "test"})
 		s.T().Logf("%+v", res)
 		s.T().Logf("%+v", err)
 		s.Require().Error(err)

@@ -1,0 +1,203 @@
+syntax = "proto3";
+
+option go_package = "./;proto";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
+
+service Mgmt {
+  rpc CreateService (CreateServiceRequest) returns (CreateServiceResponse);
+  rpc GetAllServices (google.protobuf.Empty) returns (GetAllServicesResponse);
+  rpc GetService (GetServiceRequest) returns (GetServiceResponse);
+  rpc CreateAccount (google.protobuf.Empty) returns (CreateAccountResponse);
+  rpc CreateAccountWithName (CreateAccountWithNameRequest) returns (CreateAccountWithNameResponse);
+  rpc GetAllAccounts (google.protobuf.Empty) returns (GetAllAccountsResponse);
+  rpc GetAccount (GetAccountRequest) returns (GetAccountResponse);
+  rpc UpdateAccount (UpdateAccountRequest) returns (UpdateAccountResponse);
+  rpc UpdateMapAccount (UpdateMapAccountRequest) returns (UpdateMapAccountResponse);
+  rpc AttachAccountToService (AttachAccountToServiceRequest) returns (AttachAccountToServiceResponse);
+  rpc RemoveAccountFromService (RemoveAccountFromServiceRequest) returns (RemoveAccountFromServiceResponse);
+  rpc CreatePermission (CreatePermissionRequest) returns (CreatePermissionResponse);
+  rpc GetPermission (GetPermissionRequest) returns (GetPermissionResponse);
+  rpc GetAllPermission (google.protobuf.Empty) returns (GetAllPermissionResponse);
+  rpc GetFilteredPermissions (GetFilteredPermissionsRequest) returns (GetFilteredPermissionsResponse);
+  rpc DeletePermission (DeletePermissionRequest) returns (DeletePermissionResponse);
+  rpc GetUserPermissions (GetUserPermissionsRequest) returns (GetUserPermissionsResponse);
+  rpc AddUserPermission (AddUserPermissionRequest) returns (AddUserPermissionResponse);
+  rpc RemoveUserPermission (RemoveUserPermissionRequest) returns (RemoveUserPermissionResponse);
+}
+
+message Service {
+  uint32 id = 1;
+  string name = 2;
+  string code = 3;
+}
+
+message Account {
+  uint32 id = 1;
+  string name = 2;
+  string code = 3;
+}
+
+message Permission {
+  uint32 id = 1;
+  string name = 2;
+  uint64 access = 3;
+  uint32 service_id = 4;
+}
+
+message Access {
+  uint64 access = 1;
+}
+
+message CreateServiceRequest {
+  string name = 1;
+}
+
+message CreateServiceResponse {
+  Service s = 1;
+}
+
+message GetAllServicesResponse {
+  repeated Service ss = 1;
+}
+
+message GetServiceRequest {
+  Service svc = 1;
+}
+
+message GetServiceResponse {
+  Service s = 1;
+}
+
+message CreateAccountRequest {}
+
+message CreateAccountResponse {
+  Account a = 1;
+}
+
+message CreateAccountWithNameRequest {
+  string name = 1;
+}
+
+message CreateAccountWithNameResponse {
+  Account a = 1;
+}
+
+message GetAllServicesRequest{}
+
+message GetAllAccountsRequest {}
+
+message GetAllAccountsResponse {
+  repeated Account as = 1;
+}
+
+message GetAccountRequest {
+  Account acc = 1;
+}
+
+message GetAccountResponse {
+  Account a = 1;
+}
+
+message UpdateAccountRequest {
+  Account acc = 1;
+}
+
+message UpdateAccountResponse {
+  Account a = 1;
+}
+
+message UpdateMapAccountRequest {
+  map<string, google.protobuf.Any> m = 1;
+}
+
+message UpdateMapAccountResponse {
+  bool ok = 1;
+}
+
+message AttachAccountToServiceRequest {
+  uint32 service_id = 1;
+  uint32 account_id = 2;
+}
+
+message AttachAccountToServiceResponse {
+  bool ok = 1;
+}
+
+message RemoveAccountFromServiceRequest {
+  uint32 service_id = 1;
+  uint32 account_id = 2;
+}
+
+message RemoveAccountFromServiceResponse {
+  bool ok = 1;
+}
+
+message CreatePermissionRequest {
+  uint32 service_id = 1;
+  string name = 2;
+  Access access = 3;
+}
+
+message CreatePermissionResponse {
+  Permission p = 1;
+}
+
+message GetPermissionRequest {
+  Permission p = 1;
+}
+
+message GetPermissionResponse {
+  Permission perm = 1;
+}
+
+message GetAllPermissionRequest {}
+
+message GetAllPermissionResponse {
+  repeated Permission p = 1;
+}
+
+message GetFilteredPermissionsRequest {
+  Permission p = 1;
+}
+
+message GetFilteredPermissionsResponse {
+  repeated Permission perm = 1;
+}
+
+message DeletePermissionRequest {
+  Permission p = 1;
+}
+
+message DeletePermissionResponse {
+  bool ok = 1;
+}
+
+message GetUserPermissionsRequest {
+  uint32 user_id = 1;
+}
+
+message GetUserPermissionsResponse {
+  repeated Permission permissions = 1;
+}
+
+message AddUserPermissionRequest {
+  Permission p = 1;
+  uint32 user_id = 2;
+}
+
+message AddUserPermissionResponse {
+  bool ok = 1;
+}
+
+message RemoveUserPermissionRequest {
+  uint32 perm_id = 1;
+  uint32 user_id = 2;
+}
+
+message RemoveUserPermissionResponse {
+  bool ok = 1;
+}

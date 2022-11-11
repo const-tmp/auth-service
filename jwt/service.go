@@ -1,18 +1,20 @@
 package jwt
 
 import (
+	"auth/access"
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/nullc4ts/bitmask_authz/access"
 	"log"
 	"time"
 )
 
 type Service interface {
-	AccessToken(userID, accID uint, acc access.Access, aud []string, duration time.Duration) (string, error)
+	AccessToken(userID, accID uint32, acc access.Access, aud []string, duration time.Duration) (string, error)
 	VerifyAccessToken(token string) (jwt.Claims, error)
+	Key() *ecdsa.PrivateKey
+	PublicKey() *ecdsa.PublicKey
 }
 
 type service struct {
@@ -39,7 +41,7 @@ func New(
 	}
 }
 
-func (s service) AccessToken(userID, accID uint, acc access.Access, aud []string, duration time.Duration) (string, error) {
+func (s service) AccessToken(userID, accID uint32, acc access.Access, aud []string, duration time.Duration) (string, error) {
 	t := jwt.NewWithClaims(s.signingMethod, NewAccessClaims(userID, accID, acc, aud, duration))
 
 	pk, err := s.PrivateKeyFunc(t)
@@ -89,6 +91,14 @@ func (s service) VerifyAccessToken(tokenString string) (jwt.Claims, error) {
 	}
 
 	return claims, nil
+}
+
+func (s service) Key() *ecdsa.PrivateKey {
+	return s.key
+}
+
+func (s service) PublicKey() *ecdsa.PublicKey {
+	return &s.Key().PublicKey
 }
 
 func (s service) PrivateKeyFunc(token *jwt.Token) (interface{}, error) {

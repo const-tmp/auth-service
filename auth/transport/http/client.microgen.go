@@ -16,6 +16,12 @@ func NewHTTPClient(u *url.URL, opts ...httpkit.ClientOption) transport.Endpoints
 			_Decode_Login_Response,
 			opts...,
 		).Endpoint(),
+		PublicKeyEndpoint: httpkit.NewClient(
+			"POST", u,
+			_Encode_PublicKey_Request,
+			_Decode_PublicKey_Response,
+			opts...,
+		).Endpoint(),
 		RegisterEndpoint: httpkit.NewClient(
 			"POST", u,
 			_Encode_Register_Request,

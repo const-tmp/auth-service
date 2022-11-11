@@ -1,9 +1,9 @@
 package jwt
 
 import (
+	"auth/access"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/nullc4ts/bitmask_authz/access"
 	"time"
 )
 
@@ -11,8 +11,8 @@ type ClaimsFactory func() jwt.Claims
 
 type AccessClaims struct {
 	jwt.RegisteredClaims
-	UserID    uint          `json:"user_id"`
-	AccountID uint          `json:"account_id"`
+	UserID    uint32        `json:"user_id"`
+	AccountID uint32        `json:"account_id"`
 	Access    access.Access `json:"access"`
 }
 
@@ -28,7 +28,7 @@ func (c AccessClaims) Valid() error {
 
 func AccessClaimsFactory() jwt.Claims { return &AccessClaims{} }
 
-func NewAccessClaims(userID, accID uint, acc access.Access, aud []string, duration time.Duration) AccessClaims {
+func NewAccessClaims(userID, accID uint32, acc access.Access, aud []string, duration time.Duration) AccessClaims {
 	now := time.Now()
 	//sid, _ := uuid.NewV4()
 	return AccessClaims{

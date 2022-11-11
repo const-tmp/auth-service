@@ -4,7 +4,7 @@
 package transporthttp
 
 import (
-	transport "auth/auth//transport"
+	transport "auth/auth/transport"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -39,6 +39,12 @@ func _Decode_Login_Request(_ context.Context, r *http.Request) (interface{}, err
 	return &req, err
 }
 
+func _Decode_PublicKey_Request(_ context.Context, r *http.Request) (interface{}, error) {
+	var req transport.PublicKeyRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	return &req, err
+}
+
 func _Decode_Register_Response(_ context.Context, r *http.Response) (interface{}, error) {
 	var resp transport.RegisterResponse
 	err := json.NewDecoder(r.Body).Decode(&resp)
@@ -47,6 +53,12 @@ func _Decode_Register_Response(_ context.Context, r *http.Response) (interface{}
 
 func _Decode_Login_Response(_ context.Context, r *http.Response) (interface{}, error) {
 	var resp transport.LoginResponse
+	err := json.NewDecoder(r.Body).Decode(&resp)
+	return &resp, err
+}
+
+func _Decode_PublicKey_Response(_ context.Context, r *http.Response) (interface{}, error) {
+	var resp transport.PublicKeyResponse
 	err := json.NewDecoder(r.Body).Decode(&resp)
 	return &resp, err
 }
@@ -61,10 +73,19 @@ func _Encode_Login_Request(ctx context.Context, r *http.Request, request interfa
 	return CommonHTTPRequestEncoder(ctx, r, request)
 }
 
+func _Encode_PublicKey_Request(ctx context.Context, r *http.Request, request interface{}) error {
+	r.URL.Path = path.Join(r.URL.Path, "public-key")
+	return CommonHTTPRequestEncoder(ctx, r, request)
+}
+
 func _Encode_Register_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return CommonHTTPResponseEncoder(ctx, w, response)
 }
 
 func _Encode_Login_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	return CommonHTTPResponseEncoder(ctx, w, response)
+}
+
+func _Encode_PublicKey_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return CommonHTTPResponseEncoder(ctx, w, response)
 }

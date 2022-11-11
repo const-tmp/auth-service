@@ -25,17 +25,17 @@ type recoveringMiddleware struct {
 	next   service.Service
 }
 
-func (M recoveringMiddleware) Register(ctx context.Context, login string, password string, service string, accountID uint) (ok bool, err error) {
+func (M recoveringMiddleware) Register(ctx context.Context, login string, password string, service string, accountId uint32) (ok bool, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			M.logger.Log("method", "Register", "message", r)
 			err = fmt.Errorf("%v", r)
 		}
 	}()
-	return M.next.Register(ctx, login, password, service, accountID)
+	return M.next.Register(ctx, login, password, service, accountId)
 }
 
-func (M recoveringMiddleware) Login(ctx context.Context, login string, password string, service string) (at types.AccessToken, err error) {
+func (M recoveringMiddleware) Login(ctx context.Context, login string, password string, service string) (token *types.AccessToken, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			M.logger.Log("method", "Login", "message", r)
@@ -43,4 +43,14 @@ func (M recoveringMiddleware) Login(ctx context.Context, login string, password 
 		}
 	}()
 	return M.next.Login(ctx, login, password, service)
+}
+
+func (M recoveringMiddleware) PublicKey(ctx context.Context) (pub []byte, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			M.logger.Log("method", "PublicKey", "message", r)
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return M.next.PublicKey(ctx)
 }

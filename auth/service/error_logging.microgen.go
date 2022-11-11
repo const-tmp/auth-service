@@ -24,20 +24,29 @@ type errorLoggingMiddleware struct {
 	next   service.Service
 }
 
-func (M errorLoggingMiddleware) Register(ctx context.Context, login string, password string, service string, accountID uint) (ok bool, err error) {
+func (M errorLoggingMiddleware) Register(ctx context.Context, login string, password string, service string, accountId uint32) (ok bool, err error) {
 	defer func() {
 		if err != nil {
 			M.logger.Log("method", "Register", "message", err)
 		}
 	}()
-	return M.next.Register(ctx, login, password, service, accountID)
+	return M.next.Register(ctx, login, password, service, accountId)
 }
 
-func (M errorLoggingMiddleware) Login(ctx context.Context, login string, password string, service string) (at types.AccessToken, err error) {
+func (M errorLoggingMiddleware) Login(ctx context.Context, login string, password string, service string) (token *types.AccessToken, err error) {
 	defer func() {
 		if err != nil {
 			M.logger.Log("method", "Login", "message", err)
 		}
 	}()
 	return M.next.Login(ctx, login, password, service)
+}
+
+func (M errorLoggingMiddleware) PublicKey(ctx context.Context) (pub []byte, err error) {
+	defer func() {
+		if err != nil {
+			M.logger.Log("method", "PublicKey", "message", err)
+		}
+	}()
+	return M.next.PublicKey(ctx)
 }

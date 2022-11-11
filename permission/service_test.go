@@ -32,7 +32,7 @@ func (s *testSuite) SetupSuite() {
 	s.Require().NoError(err)
 	s.db = db
 	s.perm = New(db)
-	s.svc = svcsrv.New(logger.New("[ service ]\tt"), db)
+	s.svc = svcsrv.New(logger.New("[ auth ]\tt"), db)
 	s.Require().NoError(s.db.Debug().Migrator().DropTable(&types.Permission{}, &types.Service{}))
 	s.Require().NoError(s.db.Debug().AutoMigrate(&types.Permission{}, &types.Service{}))
 }
@@ -40,14 +40,14 @@ func (s *testSuite) SetupSuite() {
 func (s *testSuite) TestServices() {
 	var svc types.Service
 
-	s.Run("create service", func() {
+	s.Run("create auth", func() {
 		v, err := s.svc.Create(context.TODO(), "test")
 		s.Require().NoError(err)
 		s.T().Logf("%+v", v)
 		svc = v
 	})
 
-	testCases := []types.Permission{
+	testCases := []*types.Permission{
 		{
 			ServiceID: svc.ID,
 			Name:      "test",

@@ -9,7 +9,7 @@ type (
 		Login     string `json:"login"`
 		Password  string `json:"password"`
 		Service   string `json:"service"`
-		AccountID uint   `json:"account_id"`
+		AccountId uint32 `json:"account_id"`
 	}
 	RegisterResponse struct {
 		Ok bool `json:"ok"`
@@ -21,6 +21,12 @@ type (
 		Service  string `json:"service"`
 	}
 	LoginResponse struct {
-		At types.AccessToken `json:"at"`
+		Token *types.AccessToken `json:"token"`
+	}
+
+	// Formal exchange type, please do not delete.
+	PublicKeyRequest  struct{}
+	PublicKeyResponse struct {
+		Pub []byte `json:"pub"`
 	}
 )

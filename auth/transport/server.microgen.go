@@ -10,15 +10,16 @@ import (
 
 func Endpoints(svc auth.Service) EndpointsSet {
 	return EndpointsSet{
-		LoginEndpoint:    LoginEndpoint(svc),
-		RegisterEndpoint: RegisterEndpoint(svc),
+		LoginEndpoint:     LoginEndpoint(svc),
+		PublicKeyEndpoint: PublicKeyEndpoint(svc),
+		RegisterEndpoint:  RegisterEndpoint(svc),
 	}
 }
 
 func RegisterEndpoint(svc auth.Service) endpoint.Endpoint {
 	return func(arg0 context.Context, request interface{}) (interface{}, error) {
 		req := request.(*RegisterRequest)
-		res0, res1 := svc.Register(arg0, req.Login, req.Password, req.Service, req.AccountID)
+		res0, res1 := svc.Register(arg0, req.Login, req.Password, req.Service, req.AccountId)
 		return &RegisterResponse{Ok: res0}, res1
 	}
 }
@@ -27,6 +28,13 @@ func LoginEndpoint(svc auth.Service) endpoint.Endpoint {
 	return func(arg0 context.Context, request interface{}) (interface{}, error) {
 		req := request.(*LoginRequest)
 		res0, res1 := svc.Login(arg0, req.Login, req.Password, req.Service)
-		return &LoginResponse{At: res0}, res1
+		return &LoginResponse{Token: res0}, res1
+	}
+}
+
+func PublicKeyEndpoint(svc auth.Service) endpoint.Endpoint {
+	return func(arg0 context.Context, request interface{}) (interface{}, error) {
+		res0, res1 := svc.PublicKey(arg0)
+		return &PublicKeyResponse{Pub: res0}, res1
 	}
 }

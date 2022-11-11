@@ -25,13 +25,13 @@ type loggingMiddleware struct {
 	next   service.Service
 }
 
-func (M loggingMiddleware) Register(arg0 context.Context, arg1 string, arg2 string, arg3 string, arg4 uint) (res0 bool, res1 error) {
+func (M loggingMiddleware) Register(arg0 context.Context, arg1 string, arg2 string, arg3 string, arg4 uint32) (res0 bool, res1 error) {
 	defer func(begin time.Time) {
 		M.logger.Log(
 			"method", "Register",
 			"message", "Register called",
 			"request", logRegisterRequest{
-				AccountID: arg4,
+				AccountId: arg4,
 				Login:     arg1,
 				Password:  arg2,
 				Service:   arg3,
@@ -43,7 +43,7 @@ func (M loggingMiddleware) Register(arg0 context.Context, arg1 string, arg2 stri
 	return M.next.Register(arg0, arg1, arg2, arg3, arg4)
 }
 
-func (M loggingMiddleware) Login(arg0 context.Context, arg1 string, arg2 string, arg3 string) (res0 types.AccessToken, res1 error) {
+func (M loggingMiddleware) Login(arg0 context.Context, arg1 string, arg2 string, arg3 string) (res0 *types.AccessToken, res1 error) {
 	defer func(begin time.Time) {
 		M.logger.Log(
 			"method", "Login",
@@ -53,11 +53,23 @@ func (M loggingMiddleware) Login(arg0 context.Context, arg1 string, arg2 string,
 				Password: arg2,
 				Service:  arg3,
 			},
-			"response", logLoginResponse{At: res0},
+			"response", logLoginResponse{Token: res0},
 			"err", res1,
 			"took", time.Since(begin))
 	}(time.Now())
 	return M.next.Login(arg0, arg1, arg2, arg3)
+}
+
+func (M loggingMiddleware) PublicKey(arg0 context.Context) (res0 []byte, res1 error) {
+	defer func(begin time.Time) {
+		M.logger.Log(
+			"method", "PublicKey",
+			"message", "PublicKey called",
+			"response", logPublicKeyResponse{Pub: res0},
+			"err", res1,
+			"took", time.Since(begin))
+	}(time.Now())
+	return M.next.PublicKey(arg0)
 }
 
 type (
@@ -65,7 +77,7 @@ type (
 		Login     string
 		Password  string
 		Service   string
-		AccountID uint
+		AccountId uint32
 	}
 	logRegisterResponse struct {
 		Ok bool
@@ -76,6 +88,9 @@ type (
 		Service  string
 	}
 	logLoginResponse struct {
-		At types.AccessToken
+		Token *types.AccessToken
+	}
+	logPublicKeyResponse struct {
+		Pub []byte
 	}
 )

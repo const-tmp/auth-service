@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option go_package = "auth/auth/proto;proto";
+
+package auth;
+
+import "google/protobuf/empty.proto";
+
+service Service {
+    rpc Register (RegisterRequest) returns (RegisterResponse);
+    rpc Login (LoginRequest) returns (LoginResponse);
+    rpc PublicKey (google.protobuf.Empty) returns (PublicKeyResponse);
+}
+
+message RegisterRequest {
+    string login = 1;
+    string password = 2;
+    string service = 3;
+    uint32 account_id = 4;
+}
+
+message RegisterResponse {
+    bool ok = 1;
+}
+
+message LoginRequest {
+    string login = 1;
+    string password = 2;
+    string service = 3;
+}
+
+message LoginResponse {
+    AccessToken token = 1;
+}
+
+message AccessToken{
+    string access_token = 1;
+}
+
+message PublicKeyRequest {}
+
+message PublicKeyResponse {
+    bytes pub = 1;
+}

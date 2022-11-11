@@ -23,5 +23,11 @@ func NewHTTPHandler(endpoints *transport.EndpointsSet, opts ...http.ServerOption
 			_Decode_Login_Request,
 			_Encode_Login_Response,
 			opts...))
+	mux.Methods("POST").Path("/public-key").Handler(
+		http.NewServer(
+			endpoints.PublicKeyEndpoint,
+			_Decode_PublicKey_Request,
+			_Encode_PublicKey_Response,
+			opts...))
 	return mux
 }

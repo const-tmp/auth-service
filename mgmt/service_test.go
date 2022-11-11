@@ -37,18 +37,16 @@ func (s *testSuite) SetupSuite() {
 	)))
 	s.Require().NoError(err)
 	s.db = db
-	s.mgmt = New(logger.New("[ account service ]\t"), db)
-	s.user = user.NewLoggingMiddleware(
-		logger.New("[ account service ]\t"),
-		user.New(db, logger.New("[ user service ]\t")),
-	)
+	s.mgmt = New(logger.New("[ mgmt ]\t"), db)
+	s.user = user.NewLoggingMiddleware(logger.New("[ user ]\t"), user.New(db))
+
 	s.acc = account.NewLoggingMiddleware(
-		logger.New("[ account service ]\t"),
+		logger.New("[ account ]\t"),
 		account.New(db),
 	)
 	s.perm = permission.New(db)
 	s.svc = svcsrv.New(
-		logger.New("[ account service ]\t"),
+		logger.New("[ account ]\t"),
 		db,
 	)
 	//s.Require().NoError(s.db.Debug().Migrator().DropTable(&types.Service{}, &types.Permission{}, &types.User{}, &types.Account{}))
@@ -61,7 +59,7 @@ func (s *testSuite) SetupSuite() {
 }
 
 func (s *testSuite) TestAccountService() {
-	svc, err := s.svc.Create(context.TODO(), "test service")
+	svc, err := s.svc.Create(context.TODO(), "test auth")
 	s.Require().NoError(err)
 
 	acc, err := s.acc.Create(context.TODO())
@@ -73,7 +71,7 @@ func (s *testSuite) TestAccountService() {
 }
 
 func (s *testSuite) TestPermission() {
-	svc, err := s.svc.Create(context.TODO(), "test service 2")
+	svc, err := s.svc.Create(context.TODO(), "test auth 2")
 	s.Require().NoError(err)
 
 	per, err := s.perm.Create(context.TODO(), svc.ID, "test", 1)
@@ -88,7 +86,7 @@ func (s *testSuite) TestPermission() {
 	s.Require().NoError(err)
 	s.Require().True(ok)
 
-	u, err = s.user.Get(context.TODO(), types.User{Model: gorm.Model{ID: u.ID}})
+	u, err = s.user.Get(context.TODO(), types.User{Model: types.Model{ID: u.ID}})
 	s.Require().NoError(err)
 	s.T().Logf("%+v", u)
 	s.T().Logf("%+v", u.Permissions)

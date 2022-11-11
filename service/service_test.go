@@ -29,7 +29,7 @@ func (s *testSuite) SetupSuite() {
 	)))
 	s.Require().NoError(err)
 	s.db = db
-	s.svc = New(logger.New("[ account service ]\t"), db)
+	s.svc = New(logger.New("[ account auth ]\t"), db)
 	s.Require().NoError(s.db.Debug().Migrator().DropTable(&types.Service{}, &types.Permission{}))
 	s.Require().NoError(s.db.Debug().AutoMigrate(&types.Service{}, &types.Permission{}))
 }

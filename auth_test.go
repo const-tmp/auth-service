@@ -3,8 +3,7 @@ package auth
 import (
 	"auth/account"
 	"auth/auth"
-	authz2 "auth/auth/authz"
-	"auth/auth/authz/service"
+	authz2 "auth/authz"
 	"auth/jwt"
 	"auth/logger"
 	"auth/mgmt"
@@ -16,13 +15,11 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"fmt"
-	"github.com/go-kit/kit/log"
 	stdjwt "github.com/golang-jwt/jwt/v4"
-	"github.com/nullc4ts/bitmask_authz/authz"
+
 	"github.com/stretchr/testify/suite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"os"
 	"testing"
 )
 
@@ -51,21 +48,15 @@ func (s *testSuite) SetupSuite() {
 	s.Require().NoError(err)
 	s.db = db
 	s.acco = account.NewLoggingMiddleware(
-		logger.New("[ account service ]\t"),
+		logger.New("[ account auth ]\t"),
 		account.New(db),
 	)
-	s.user = user2.NewLoggingMiddleware(
-		logger.New("[ user service ]\t"),
-		user2.NewService(user2.New(db, logger.New("[ user service ]\t"))),
-	)
-	s.authz = service.LoggingMiddleware(
-		log.NewLogfmtLogger(os.Stdout),
-	)(service.RecoveringMiddleware(
-		log.NewLogfmtLogger(os.Stdout),
-	)(authz2.New(db)),
-	)
+	s.user = user2.NewLoggingMiddleware(logger.New("[ user ]\t"), user2.New(db))
+
+	s.authz = authz2.NewService(db)
+
 	s.mgmt = mgmt.New(logger.New("[ mgmt ]\t"), db)
-	s.svc = svcsrv.New(logger.New("[ service ]\t"), db)
+	s.svc = svcsrv.New(logger.New("[ auth ]\t"), db)
 
 	var privateKey = make([]byte, 64)
 	_, err = rand.Read(privateKey)
@@ -95,17 +86,17 @@ func (s *testSuite) SetupSuite() {
 }
 
 func (s *testSuite) TestAuth() {
-	az := authz.New("read", "write")
+	az := authz2.New("read", "write")
 	var svc types.Service
-	s.Run("create service", func() {
+	s.Run("create auth", func() {
 		sv, err := s.svc.Create(context.TODO(), "test")
 		s.Require().NoError(err)
-		svc = sv
+		svc = *sv
 	})
-	var perms []types.Permission
+	var perms []*types.Permission
 	for name, access := range az.ByName() {
-		s.Run(fmt.Sprint("create permission", name, access, "service:", svc.Name, svc.ID), func() {
-			v, err := s.authz.AddPermission(context.TODO(), types.Permission{
+		s.Run(fmt.Sprint("create permission", name, access, "auth:", svc.Name, svc.ID), func() {
+			v, err := s.authz.AddPermission(context.TODO(), &types.Permission{
 				ServiceID: svc.ID,
 				Name:      name,
 				Access:    access,
@@ -116,7 +107,7 @@ func (s *testSuite) TestAuth() {
 		})
 	}
 	svcNames := []string{"", svc.Name}
-	accIDs := []uint{0, 1}
+	accIDs := []uint32{0, 1}
 	var j int
 	for i := 0; i < 2; i++ {
 		for _, name := range svcNames {
@@ -143,10 +134,10 @@ func (s *testSuite) TestAuth() {
 					t, err := s.auth.Login(context.TODO(), fmt.Sprint("test", j), "test", name)
 					s.Require().NoError(err)
 					s.T().Log(t.AccessToken)
-					s.T().Log(t.RefreshToken)
 					claims, err := s.jwt.VerifyAccessToken(t.AccessToken)
 					s.Require().NoError(err)
 					s.T().Log(claims)
+					s.Require().True(az.Access("read", "write").Check(claims.(*jwt.AccessClaims).Access))
 				})
 			}
 		}
@@ -154,11 +145,11 @@ func (s *testSuite) TestAuth() {
 }
 
 func (s *testSuite) TestService() {
-	az := authz.New("active", "read", "write", "admin", "root")
-	var testServices []types.Service
+	az := authz2.New("active", "read", "write", "admin", "root")
+	var testServices []*types.Service
 	for i := 0; i < 5; i++ {
-		s.Run(fmt.Sprint("create service", i+1), func() {
-			v, err := s.svc.Create(context.TODO(), fmt.Sprint("service", i+1))
+		s.Run(fmt.Sprint("create auth", i+1), func() {
+			v, err := s.svc.Create(context.TODO(), fmt.Sprint("auth", i+1))
 			s.Require().NoError(err)
 			s.T().Logf("%+v", v)
 			testServices = append(testServices, v)
@@ -168,7 +159,7 @@ func (s *testSuite) TestService() {
 	for i, testService := range testServices {
 		for name, access := range az.ByName() {
 			s.Run(fmt.Sprint(i, testService.Name, "add permission", name), func() {
-				v, err := s.authz.AddPermission(context.TODO(), types.Permission{
+				v, err := s.authz.AddPermission(context.TODO(), &types.Permission{
 					ServiceID: testService.ID,
 					Name:      name,
 					Access:    access,
@@ -179,7 +170,7 @@ func (s *testSuite) TestService() {
 		}
 	}
 
-	var testPermissions []types.Permission
+	var testPermissions []*types.Permission
 
 	for i, svc := range testServices {
 		s.Run(fmt.Sprint(i, "get", svc.Name, "permissions"), func() {
@@ -190,7 +181,7 @@ func (s *testSuite) TestService() {
 		})
 	}
 
-	var testUsers []types.User
+	var testUsers []*types.User
 
 	for i := 0; i < 5; i++ {
 		s.Run(fmt.Sprint("create user", i+1), func() {
@@ -223,7 +214,7 @@ func (s *testSuite) TestService() {
 	for _, user := range testUsers {
 		for _, svc := range testServices {
 			s.Run(fmt.Sprint("get", user.Name, svc.Name, "permissions"), func() {
-				v, err := s.authz.GetUserPermissions(context.TODO(), types.Permission{ServiceID: svc.ID}, user.ID)
+				v, err := s.authz.GetUserPermissions(context.TODO(), &types.Permission{ServiceID: svc.ID}, user.ID)
 				s.Require().NoError(err)
 				s.T().Log("user", user.Name, user.ID)
 				for i, permission := range v {
@@ -259,7 +250,7 @@ func (s *testSuite) TestService() {
 }
 
 func (s *testSuite) TestPermissions() {
-	az := authz.New("active", "read", "write", "admin", "root")
+	az := authz2.New("active", "read", "write", "admin", "root")
 
 	svc, err := s.svc.Create(context.TODO(), "svc1")
 	s.Require().NoError(err)
@@ -270,7 +261,7 @@ func (s *testSuite) TestPermissions() {
 
 	p, err := s.authz.AddPermission(
 		context.TODO(),
-		types.Permission{ServiceID: svc.ID, Name: "active", Access: az.ByName()["active"]},
+		&types.Permission{ServiceID: svc.ID, Name: "active", Access: az.ByName()["active"]},
 	)
 	s.Require().NoError(err)
 	s.T().Log(p)
@@ -284,15 +275,3 @@ func (s *testSuite) TestPermissions() {
 func TestAuth(t *testing.T) {
 	suite.Run(t, new(testSuite))
 }
-
-func (s *testSuite) TestInterface() {
-	u := user2.New(s.db, logger.New(""))
-	var _ user2.Repo = u
-	var _ user2.Service = u
-}
-
-//func TestECDSA(t *testing.T) {
-//	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-//	require.NoError(t, err)
-//
-//}

@@ -1,43 +1,51 @@
+//go:generate protoc --proto_path=proto --go_out=proto --go_opt=paths=source_relative --go-grpc_out=proto --go-grpc_opt=paths=source_relative proto/service.proto
+//go:generate microgen -file service.go -package auth/auth -out . -pb-go proto/service.pb.go -main
+
 package auth
 
 import (
+	"auth/access"
 	"auth/account"
-	"auth/auth/authz"
 	"auth/jwt"
 	"auth/mgmt"
-	"auth/pkg/password"
+	"auth/pkg/ec"
+	password2 "auth/pkg/password"
 	"auth/pkg/types"
 	svcsrv "auth/service"
 	"auth/user"
 	"context"
 	"errors"
-	"github.com/nullc4ts/bitmask_authz/access"
+
 	"gorm.io/gorm"
 	"log"
 	"time"
 )
 
-// @microgen middleware, logging, http, recovering, error-logging
+// @microgen middleware, logging, http, grpc, recovering, error-logging
+// @protobuf auth/auth/proto
 type Service interface {
-	Register(ctx context.Context, login, password, service string, accountID uint) (ok bool, err error)
-	Login(ctx context.Context, login, password, service string) (at types.AccessToken, err error)
+	Register(ctx context.Context, login, password, service string, accountId uint32) (ok bool, err error)
+	Login(ctx context.Context, login, password, service string) (token *types.AccessToken, err error)
+	PublicKey(ctx context.Context) (pub []byte, err error)
 }
 
 type service struct {
-	logger  *log.Logger
-	user    user.Service
-	authz   authz.Service
+	logger *log.Logger
+	user   user.Service
+	//authz   authz.Service
 	mgmt    mgmt.Service
 	svc     svcsrv.Service
 	account account.Repo
 	jwt     jwt.Service
 }
 
-func New(logger *log.Logger, user user.Service, authz authz.Service, mgmt mgmt.Service, svc svcsrv.Service, account account.Repo, jwt jwt.Service) Service {
-	return &service{logger: logger, user: user, authz: authz, mgmt: mgmt, svc: svc, account: account, jwt: jwt}
+func New(logger *log.Logger, user user.Service, mgmt mgmt.Service, svc svcsrv.Service, account account.Repo, jwt jwt.Service) Service {
+	return &service{logger: logger, user: user, mgmt: mgmt, svc: svc, account: account, jwt: jwt}
 }
 
-func (s service) Register(ctx context.Context, login, password, service string, accountID uint) (bool, error) {
+var BadCreds = errors.New("bad credentials")
+
+func (s service) Register(ctx context.Context, login, password, service string, accountId uint32) (bool, error) {
 	u, err := s.user.Get(ctx, types.User{Name: login})
 	if err == nil {
 		s.logger.Println("user", login, "exists:", u)
@@ -53,39 +61,39 @@ func (s service) Register(ctx context.Context, login, password, service string, 
 		return false, err
 	}
 
-	var a types.Account
+	var a *types.Account
 
-	if accountID == 0 {
+	if accountId == 0 {
 		a, err = s.account.Create(ctx)
 	} else {
-		a, err = s.account.Get(ctx, types.Account{Model: gorm.Model{ID: accountID}})
+		a, err = s.account.Get(ctx, &types.Account{Model: types.Model{ID: accountId}})
 	}
 	if err != nil {
-		s.logger.Printf("get or create account %d error: %s", accountID, err)
+		s.logger.Printf("get or create account %d error: %s", accountId, err)
 		return false, err
 	}
 
 	ok, err := s.user.SetAccount(ctx, u.ID, a.ID)
 	if err != nil {
-		s.logger.Printf("set account %d error: %s", accountID, err)
+		s.logger.Printf("set account %d error: %s", accountId, err)
 		return ok, err
 	}
 
 	if service != "" {
-		var svc types.Service
-		svc, err = s.svc.Get(ctx, types.Service{Name: service})
+		var svc *types.Service
+		svc, err = s.svc.Get(ctx, &types.Service{Name: service})
 		if err != nil {
-			s.logger.Println("get service error:", err)
+			s.logger.Println("get auth error:", err)
 			return false, err
 		}
 
 		ok, err := s.mgmt.AttachAccountToService(ctx, svc.ID, a.ID)
 		if err != nil {
-			s.logger.Println("attach account to service error:", err)
+			s.logger.Println("attach account to auth error:", err)
 			return false, err
 		}
 		if !ok {
-			s.logger.Println("attach account to service not ok")
+			s.logger.Println("attach account to auth not ok")
 			return false, nil
 		}
 	}
@@ -93,35 +101,33 @@ func (s service) Register(ctx context.Context, login, password, service string, 
 	return true, nil
 }
 
-var BadCreds = errors.New("bad credentials")
-
-func (s service) Login(ctx context.Context, login, pass, service string) (types.AccessToken, error) {
+func (s service) Login(ctx context.Context, login, password, service string) (*types.AccessToken, error) {
 	u, err := s.user.Get(ctx, types.User{Name: login})
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			s.logger.Println("get user error", err)
-			return types.AccessToken{}, err
+			return nil, err
 		}
 		s.logger.Println("user", login, "not found")
-		return types.AccessToken{}, BadCreds
+		return nil, BadCreds
 	}
 	if u.ID == 0 {
-		return types.AccessToken{}, BadCreds
+		return nil, BadCreds
 	}
-	if !password.CheckHash(pass, u.Password) {
-		return types.AccessToken{}, BadCreds
+	if !password2.CheckHash(password, u.Password) {
+		return nil, BadCreds
 	}
 
-	svc, err := s.svc.Get(ctx, types.Service{Name: service})
+	svc, err := s.svc.Get(ctx, &types.Service{Name: service})
 	if err != nil {
-		s.logger.Println("get service error:", err)
-		return types.AccessToken{}, err
+		s.logger.Println("get auth error:", err)
+		return nil, err
 	}
 
-	p, err := s.authz.GetUserPermissions(ctx, types.Permission{ServiceID: svc.ID}, u.ID)
+	p, err := s.mgmt.GetUserPermissions(ctx, u.ID)
 	if err != nil {
 		s.logger.Println("get user permission error:", err)
-		return types.AccessToken{}, err
+		return nil, err
 	}
 	ac := access.Access(0)
 	for _, permission := range p {
@@ -133,8 +139,12 @@ func (s service) Login(ctx context.Context, login, pass, service string) (types.
 
 	if err != nil {
 		s.logger.Println("jwt error:", err)
-		return types.AccessToken{}, err
+		return nil, err
 	}
 
-	return types.AccessToken{AccessToken: at}, nil
+	return &types.AccessToken{AccessToken: at}, nil
+}
+
+func (s service) PublicKey(ctx context.Context) (pub []byte, err error) {
+	return ec.PublicKey2PEM(s.jwt.PublicKey())
 }
