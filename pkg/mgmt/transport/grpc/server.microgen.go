@@ -4,10 +4,10 @@
 package transportgrpc
 
 import (
-	pb "auth/pkg/mgmt/proto"
-	transport "auth/pkg/mgmt/transport"
 	grpc "github.com/go-kit/kit/transport/grpc"
 	empty "github.com/golang/protobuf/ptypes/empty"
+	pb "github.com/nullc4t/auth-service/pkg/mgmt/proto"
+	transport "github.com/nullc4t/auth-service/pkg/mgmt/transport"
 	context "golang.org/x/net/context"
 )
 

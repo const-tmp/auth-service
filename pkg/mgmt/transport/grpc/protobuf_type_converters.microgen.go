@@ -5,10 +5,10 @@
 package transportgrpc
 
 import (
-	access "auth/pkg/access"
-	pb "auth/pkg/mgmt/proto"
-	types "auth/pkg/types"
 	"github.com/gofrs/uuid"
+	access "github.com/nullc4t/auth-service/pkg/access"
+	pb "github.com/nullc4t/auth-service/pkg/mgmt/proto"
+	types "github.com/nullc4t/auth-service/pkg/types"
 )
 
 func PtrTypesUserToProto(user *types.User) (*pb.User, error) {
@@ -71,15 +71,15 @@ func ProtoToListPtrTypesUser(protoUsers []*pb.User) ([]*types.User, error) {
 			return nil, err
 		}
 		res = append(res, &types.User{
-			Model:       types.Model{},
-			Code:        u,
-			Name:        s.Name,
-			TGName:      s.TgName,
-			TGID:        s.TgId,
-			TGUserName:  s.TgUsername,
-			ParentID:    s.ParentId,
-			AccountID:   s.AccountId,
-			Blocked:     s.Blocked,
+			Model:      types.Model{},
+			Code:       u,
+			Name:       s.Name,
+			TGName:     s.TgName,
+			TGID:       s.TgId,
+			TGUserName: s.TgUsername,
+			ParentID:   s.ParentId,
+			AccountID:  s.AccountId,
+			Blocked:    s.Blocked,
 		})
 	}
 	return res, nil
