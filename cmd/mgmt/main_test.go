@@ -16,7 +16,10 @@ import (
 	"testing"
 )
 
-const serviceAddr = "localhost:9091"
+const (
+	serviceAddr     = "localhost:9091"
+	serviceHTTPAddr = "localhost:8080"
+)
 
 type testSuite struct {
 	suite.Suite

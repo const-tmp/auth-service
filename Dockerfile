@@ -14,7 +14,7 @@ COPY . .
 RUN go build -o bin/auth cmd/auth/main.go
 RUN go build -o bin/mgmt cmd/mgmt/main.go
 
-## Deploy
+# Deploy
 FROM gcr.io/distroless/base-debian11
 
 WORKDIR /

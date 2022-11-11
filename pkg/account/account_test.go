@@ -35,7 +35,7 @@ func (s *testSuite) SetupSuite() {
 		logger.New("[ account auth ]\t"),
 		New(db),
 	)
-	s.mgmt = mgmt.New(logger.New("[ mgmt ]\t"), db)
+	s.mgmt = mgmt.New(logger.New("[ mgmt ]\t"), db, svcSvc, accountSvc, permissionSvc, userSvc)
 
 	s.Require().NoError(s.db.Debug().Migrator().DropTable(&types.Account{}, &types.Service{}))
 	s.Require().NoError(s.db.Debug().AutoMigrate(&types.Account{}, &types.Service{}))
