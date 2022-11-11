@@ -1,5 +1,5 @@
 //go:generate protoc --proto_path=proto --go_out=proto --go_opt=paths=source_relative --go-grpc_out=proto --go-grpc_opt=paths=source_relative proto/service.proto
-//go:generate microgen -file service.go -package auth/pkg/auth -out . -pb-go proto/service.pb.go -main
+//go:generate microgen -file service.go -package auth/pkg/auth -out . -pb-go proto/service.pb.go
 
 package auth
 

@@ -13,9 +13,15 @@ import (
 type Service interface {
 	AccessToken(userID, accID uint32, acc access.Access, aud []string, duration time.Duration) (string, error)
 	VerifyAccessToken(token string) (jwt.Claims, error)
+	ClaimsFactory() ClaimsFactory
+	SigningMethod() jwt.SigningMethod
 	Key() *ecdsa.PrivateKey
 	PublicKey() *ecdsa.PublicKey
 }
+
+var (
+	ValidMethodsEC = []string{jwt.SigningMethodES256.Name}
+)
 
 type service struct {
 	logger              *log.Logger
@@ -23,6 +29,11 @@ type service struct {
 	validSigningMethods []string
 	claimsFactory       ClaimsFactory
 	key                 *ecdsa.PrivateKey
+	publicKey           *ecdsa.PublicKey
+}
+
+func (s service) SigningMethod() jwt.SigningMethod {
+	return s.signingMethod
 }
 
 func New(
@@ -31,6 +42,7 @@ func New(
 	validSigningMethods []string,
 	claimsFactory ClaimsFactory,
 	key *ecdsa.PrivateKey,
+	publicKey *ecdsa.PublicKey,
 ) Service {
 	return &service{
 		logger:              logger,
@@ -38,7 +50,12 @@ func New(
 		validSigningMethods: validSigningMethods,
 		claimsFactory:       claimsFactory,
 		key:                 key,
+		publicKey:           publicKey,
 	}
+}
+
+func (s service) ClaimsFactory() ClaimsFactory {
+	return s.claimsFactory
 }
 
 func (s service) AccessToken(userID, accID uint32, acc access.Access, aud []string, duration time.Duration) (string, error) {
@@ -114,5 +131,5 @@ func (s service) PublicKeyFunc(token *jwt.Token) (interface{}, error) {
 	if !ok {
 		return nil, fmt.Errorf("unexpected token signing method")
 	}
-	return &s.key.PublicKey, nil
+	return s.publicKey, nil
 }

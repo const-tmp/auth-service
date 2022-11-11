@@ -100,6 +100,7 @@ func main() {
 		[]string{jwt2.SigningMethodES256.Name},
 		jwt.AccessClaimsFactory,
 		pk,
+		&pk.PublicKey,
 	)
 
 	g, ctx := errgroup.WithContext(context.Background())

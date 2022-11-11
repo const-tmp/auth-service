@@ -1,7 +1,7 @@
 package main
 
 import (
-	"auth/pkg/authz"
+	"auth/pkg/access"
 	"auth/pkg/mgmt"
 	"auth/pkg/mgmt/proto"
 	transportgrpc "auth/pkg/mgmt/transport/grpc"
@@ -56,7 +56,7 @@ func (s *testSuite) SetupSuite() {
 }
 
 func (s *testSuite) TestMgmt() {
-	am := authz.New("test")
+	am := access.NewHelperFromPermissions("test")
 
 	var (
 		svc  *types.Service

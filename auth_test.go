@@ -1,9 +1,9 @@
 package auth
 
 import (
+	"auth/pkg/access"
 	"auth/pkg/account"
 	"auth/pkg/auth"
-	authz2 "auth/pkg/authz"
 	"auth/pkg/jwt"
 	"auth/pkg/logger"
 	"auth/pkg/mgmt"
@@ -71,6 +71,7 @@ func (s *testSuite) SetupSuite() {
 		[]string{stdjwt.SigningMethodES256.Name},
 		jwt.AccessClaimsFactory,
 		key,
+		&key.PublicKey,
 	)
 
 	s.auth = auth.New(logger.New("[ auth ]\t"), s.mgmt, s.jwt)
@@ -86,7 +87,7 @@ func (s *testSuite) SetupSuite() {
 }
 
 func (s *testSuite) TestAuth() {
-	az := authz2.New("read", "write")
+	az := access.NewHelperFromPermissions("read", "write")
 	var svc types.Service
 	s.Run("create auth", func() {
 		sv, err := s.svc.Create(context.TODO(), "test")
@@ -144,7 +145,7 @@ func (s *testSuite) TestAuth() {
 }
 
 func (s *testSuite) TestService() {
-	az := authz2.New("active", "read", "write", "admin", "root")
+	az := access.NewHelperFromPermissions("active", "read", "write", "admin", "root")
 	var testServices []*types.Service
 	for i := 0; i < 5; i++ {
 		s.Run(fmt.Sprint("create auth", i+1), func() {
@@ -245,7 +246,7 @@ func (s *testSuite) TestService() {
 }
 
 func (s *testSuite) TestPermissions() {
-	az := authz2.New("active", "read", "write", "admin", "root")
+	az := access.NewHelperFromPermissions("active", "read", "write", "admin", "root")
 
 	svc, err := s.svc.Create(context.TODO(), "svc1")
 	s.Require().NoError(err)

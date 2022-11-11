@@ -2,11 +2,10 @@ package jwt
 
 import (
 	"auth/pkg/access"
-	"auth/pkg/authz"
 	"auth/pkg/logger"
 	"context"
 	"errors"
-	"github.com/go-kit/kit/auth/jwt"
+	kitjwt "github.com/go-kit/kit/auth/jwt"
 	"github.com/go-kit/kit/endpoint"
 	stdjwt "github.com/golang-jwt/jwt/v4"
 )
@@ -16,16 +15,16 @@ var (
 	l            = logger.New("[ jwt middleware ]\t")
 )
 
-func ValidatorFactory(a authz.Authorizer, permissions ...string) func(acc access.Access) bool {
+func ValidatorFactory(a access.Helper, permissions ...string) func(acc access.Access) bool {
 	return func(acc access.Access) bool {
 		return a.Access(permissions...).Check(acc)
 	}
 }
 
-func ValidatorMiddleware(a authz.Authorizer, permissions ...string) endpoint.Middleware {
+func AccessCheckMiddleware(a access.Helper, permissions ...string) endpoint.Middleware {
 	return func(next endpoint.Endpoint) endpoint.Endpoint {
 		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-			claims := ctx.Value(jwt.JWTClaimsContextKey).(*AccessClaims)
+			claims := ctx.Value(kitjwt.JWTClaimsContextKey).(*AccessClaims)
 			l.Printf("claims: %+v", claims)
 			if ValidatorFactory(a, permissions...)(claims.Access) {
 				l.Println("authorized")
@@ -37,14 +36,26 @@ func ValidatorMiddleware(a authz.Authorizer, permissions ...string) endpoint.Mid
 	}
 }
 
-func Middleware(j Service, a authz.Authorizer, permissions ...string) endpoint.Middleware {
+func Middleware(j Service, a access.Helper, permissions ...string) endpoint.Middleware {
 	return func(next endpoint.Endpoint) endpoint.Endpoint {
-		return jwt.NewParser(
+		return kitjwt.NewParser(
 			func(token *stdjwt.Token) (interface{}, error) {
 				return j.PublicKey(), nil
 			},
-			stdjwt.SigningMethodES256,
-			AccessClaimsFactory,
-		)(ValidatorMiddleware(a, permissions...)(next))
+			j.SigningMethod(),
+			kitjwt.ClaimsFactory(j.ClaimsFactory()),
+		)(AccessCheckMiddleware(a, permissions...)(next))
+	}
+}
+
+func KitAdapterMiddleware(j Service) endpoint.Middleware {
+	return func(next endpoint.Endpoint) endpoint.Endpoint {
+		return kitjwt.NewParser(
+			func(token *stdjwt.Token) (interface{}, error) {
+				return j.PublicKey(), nil
+			},
+			j.SigningMethod(),
+			kitjwt.ClaimsFactory(j.ClaimsFactory()),
+		)(next)
 	}
 }
