@@ -2,18 +2,18 @@
 package main
 
 import (
-	"auth/account"
-	"auth/logger"
-	"auth/mgmt"
-	"auth/mgmt/proto"
-	mgmtservice "auth/mgmt/service"
-	mgmttransport "auth/mgmt/transport"
-	mgmtgrpc "auth/mgmt/transport/grpc"
-	mgmthttp "auth/mgmt/transport/http"
-	"auth/permission"
+	"auth/pkg/account"
+	"auth/pkg/logger"
+	"auth/pkg/mgmt"
+	"auth/pkg/mgmt/proto"
+	mgmtservice "auth/pkg/mgmt/service"
+	mgmttransport "auth/pkg/mgmt/transport"
+	mgmtgrpc "auth/pkg/mgmt/transport/grpc"
+	mgmthttp "auth/pkg/mgmt/transport/http"
+	"auth/pkg/permission"
+	svcsrv "auth/pkg/service"
 	"auth/pkg/types"
-	svcsrv "auth/service"
-	"auth/user"
+	user2 "auth/pkg/user"
 	"context"
 	"errors"
 	"fmt"
@@ -88,7 +88,7 @@ func main() {
 	permissionSvc := permission.New(db)
 	svcSvc := svcsrv.New(logger.New("[ service ]\t"), db)
 	accountSvc := account.NewLoggingMiddleware(logger.New("[ service ]\t"), account.New(db))
-	userSvc := user.NewLoggingMiddleware(logger.New("[ user ]\t"), user.New(db))
+	userSvc := user2.NewLoggingMiddleware(logger.New("[ user ]\t"), user2.New(db))
 	//jwtSvc := jwt.New(
 	//	logger.New("[ jwt ]\t"),
 	//	jwt2.SigningMethodES256,

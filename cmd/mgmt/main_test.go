@@ -1,10 +1,10 @@
 package main
 
 import (
-	"auth/authz"
-	"auth/mgmt"
-	"auth/mgmt/proto"
-	transportgrpc "auth/mgmt/transport/grpc"
+	"auth/pkg/authz"
+	"auth/pkg/mgmt"
+	"auth/pkg/mgmt/proto"
+	transportgrpc "auth/pkg/mgmt/transport/grpc"
 	"auth/pkg/types"
 	"context"
 	"fmt"

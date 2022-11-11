@@ -1,16 +1,16 @@
 package auth
 
 import (
-	"auth/account"
-	"auth/auth"
-	authz2 "auth/authz"
-	"auth/jwt"
-	"auth/logger"
-	"auth/mgmt"
-	"auth/permission"
+	"auth/pkg/account"
+	"auth/pkg/auth"
+	authz2 "auth/pkg/authz"
+	"auth/pkg/jwt"
+	"auth/pkg/logger"
+	"auth/pkg/mgmt"
+	"auth/pkg/permission"
+	svcsrv "auth/pkg/service"
 	"auth/pkg/types"
-	svcsrv "auth/service"
-	user2 "auth/user"
+	"auth/pkg/user"
 	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
@@ -28,7 +28,7 @@ type testSuite struct {
 	suite.Suite
 	db   *gorm.DB
 	acco account.Repo
-	user user2.Service
+	user user.Service
 	mgmt mgmt.Service
 	svc  svcsrv.Service
 	auth auth.Service
@@ -52,7 +52,7 @@ func (s *testSuite) SetupSuite() {
 		logger.New("[ account auth ]\t"),
 		account.New(db),
 	)
-	s.user = user2.NewLoggingMiddleware(logger.New("[ user ]\t"), user2.New(db))
+	s.user = user.NewLoggingMiddleware(logger.New("[ user ]\t"), user.New(db))
 	s.p = permission.New(db)
 
 	s.svc = svcsrv.New(logger.New("[ auth ]\t"), db)

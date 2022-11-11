@@ -1,7 +1,7 @@
 package ec
 
 import (
-	"auth/logger"
+	"auth/pkg/logger"
 	"crypto/ecdsa"
 	"crypto/x509"
 	"encoding/pem"

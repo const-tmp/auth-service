@@ -1,4 +1,4 @@
 gen-auth:
-	go generate auth/auth
+	go generate auth/pkg/auth
 gen-mgmt:
-	go generate auth/mgmt
+	go generate auth/pkg/mgmt

@@ -1,7 +1,7 @@
 package types
 
 import (
-	"auth/access"
+	"auth/pkg/access"
 	"github.com/gofrs/uuid"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
