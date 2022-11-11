@@ -10,24 +10,87 @@ import (
 
 func Endpoints(svc mgmt.Service) EndpointsSet {
 	return EndpointsSet{
-		AddUserPermissionEndpoint:        AddUserPermissionEndpoint(svc),
-		AttachAccountToServiceEndpoint:   AttachAccountToServiceEndpoint(svc),
-		CreateAccountEndpoint:            CreateAccountEndpoint(svc),
-		CreateAccountWithNameEndpoint:    CreateAccountWithNameEndpoint(svc),
-		CreatePermissionEndpoint:         CreatePermissionEndpoint(svc),
-		CreateServiceEndpoint:            CreateServiceEndpoint(svc),
-		DeletePermissionEndpoint:         DeletePermissionEndpoint(svc),
-		GetAccountEndpoint:               GetAccountEndpoint(svc),
-		GetAllAccountsEndpoint:           GetAllAccountsEndpoint(svc),
-		GetAllPermissionEndpoint:         GetAllPermissionEndpoint(svc),
-		GetAllServicesEndpoint:           GetAllServicesEndpoint(svc),
-		GetFilteredPermissionsEndpoint:   GetFilteredPermissionsEndpoint(svc),
-		GetPermissionEndpoint:            GetPermissionEndpoint(svc),
-		GetServiceEndpoint:               GetServiceEndpoint(svc),
-		GetUserPermissionsEndpoint:       GetUserPermissionsEndpoint(svc),
-		RemoveAccountFromServiceEndpoint: RemoveAccountFromServiceEndpoint(svc),
-		RemoveUserPermissionEndpoint:     RemoveUserPermissionEndpoint(svc),
-		UpdateAccountEndpoint:            UpdateAccountEndpoint(svc),
+		AddUserPermissionEndpoint:           AddUserPermissionEndpoint(svc),
+		AttachAccountToServiceEndpoint:      AttachAccountToServiceEndpoint(svc),
+		AttachUserToAccountEndpoint:         AttachUserToAccountEndpoint(svc),
+		BlockUserEndpoint:                   BlockUserEndpoint(svc),
+		CreateAccountEndpoint:               CreateAccountEndpoint(svc),
+		CreateAccountWithNameEndpoint:       CreateAccountWithNameEndpoint(svc),
+		CreatePermissionEndpoint:            CreatePermissionEndpoint(svc),
+		CreateServiceEndpoint:               CreateServiceEndpoint(svc),
+		CreateUserWithLoginPasswordEndpoint: CreateUserWithLoginPasswordEndpoint(svc),
+		CreateUserWithTelegramEndpoint:      CreateUserWithTelegramEndpoint(svc),
+		DeletePermissionEndpoint:            DeletePermissionEndpoint(svc),
+		GetAccountEndpoint:                  GetAccountEndpoint(svc),
+		GetAllAccountsEndpoint:              GetAllAccountsEndpoint(svc),
+		GetAllPermissionEndpoint:            GetAllPermissionEndpoint(svc),
+		GetAllServicesEndpoint:              GetAllServicesEndpoint(svc),
+		GetAllUsersEndpoint:                 GetAllUsersEndpoint(svc),
+		GetFilteredPermissionsEndpoint:      GetFilteredPermissionsEndpoint(svc),
+		GetPermissionEndpoint:               GetPermissionEndpoint(svc),
+		GetServiceEndpoint:                  GetServiceEndpoint(svc),
+		GetUserEndpoint:                     GetUserEndpoint(svc),
+		GetUserPermissionsEndpoint:          GetUserPermissionsEndpoint(svc),
+		RemoveAccountFromServiceEndpoint:    RemoveAccountFromServiceEndpoint(svc),
+		RemoveUserPermissionEndpoint:        RemoveUserPermissionEndpoint(svc),
+		UnblockUserEndpoint:                 UnblockUserEndpoint(svc),
+		UpdateAccountEndpoint:               UpdateAccountEndpoint(svc),
+		UpdateUserEndpoint:                  UpdateUserEndpoint(svc),
+	}
+}
+
+func CreateUserWithLoginPasswordEndpoint(svc mgmt.Service) endpoint.Endpoint {
+	return func(arg0 context.Context, request interface{}) (interface{}, error) {
+		req := request.(*CreateUserWithLoginPasswordRequest)
+		res0, res1 := svc.CreateUserWithLoginPassword(arg0, req.Login, req.Pass)
+		return &CreateUserWithLoginPasswordResponse{User: res0}, res1
+	}
+}
+
+func CreateUserWithTelegramEndpoint(svc mgmt.Service) endpoint.Endpoint {
+	return func(arg0 context.Context, request interface{}) (interface{}, error) {
+		req := request.(*CreateUserWithTelegramRequest)
+		res0, res1 := svc.CreateUserWithTelegram(arg0, req.Id, req.Name, req.UserN)
+		return &CreateUserWithTelegramResponse{User: res0}, res1
+	}
+}
+
+func GetAllUsersEndpoint(svc mgmt.Service) endpoint.Endpoint {
+	return func(arg0 context.Context, request interface{}) (interface{}, error) {
+		res0, res1 := svc.GetAllUsers(arg0)
+		return &GetAllUsersResponse{Users: res0}, res1
+	}
+}
+
+func GetUserEndpoint(svc mgmt.Service) endpoint.Endpoint {
+	return func(arg0 context.Context, request interface{}) (interface{}, error) {
+		req := request.(*GetUserRequest)
+		res0, res1 := svc.GetUser(arg0, req.UserReq)
+		return &GetUserResponse{User: res0}, res1
+	}
+}
+
+func UpdateUserEndpoint(svc mgmt.Service) endpoint.Endpoint {
+	return func(arg0 context.Context, request interface{}) (interface{}, error) {
+		req := request.(*UpdateUserRequest)
+		res0, res1 := svc.UpdateUser(arg0, req.UserReq)
+		return &UpdateUserResponse{User: res0}, res1
+	}
+}
+
+func BlockUserEndpoint(svc mgmt.Service) endpoint.Endpoint {
+	return func(arg0 context.Context, request interface{}) (interface{}, error) {
+		req := request.(*BlockUserRequest)
+		res0, res1 := svc.BlockUser(arg0, req.UserId)
+		return &BlockUserResponse{Ok: res0}, res1
+	}
+}
+
+func UnblockUserEndpoint(svc mgmt.Service) endpoint.Endpoint {
+	return func(arg0 context.Context, request interface{}) (interface{}, error) {
+		req := request.(*UnblockUserRequest)
+		res0, res1 := svc.UnblockUser(arg0, req.UserId)
+		return &UnblockUserResponse{Ok: res0}, res1
 	}
 }
 
@@ -89,6 +152,14 @@ func UpdateAccountEndpoint(svc mgmt.Service) endpoint.Endpoint {
 		req := request.(*UpdateAccountRequest)
 		res0, res1 := svc.UpdateAccount(arg0, req.Acc)
 		return &UpdateAccountResponse{A: res0}, res1
+	}
+}
+
+func AttachUserToAccountEndpoint(svc mgmt.Service) endpoint.Endpoint {
+	return func(arg0 context.Context, request interface{}) (interface{}, error) {
+		req := request.(*AttachUserToAccountRequest)
+		res0, res1 := svc.AttachUserToAccount(arg0, req.UserId, req.AccountId)
+		return &AttachUserToAccountResponse{Ok: res0}, res1
 	}
 }
 

@@ -25,6 +25,20 @@ func NewGRPCClient(conn *grpc.ClientConn, addr string, opts ...grpckit.ClientOpt
 			pb.AttachAccountToServiceResponse{},
 			opts...,
 		).Endpoint(),
+		AttachUserToAccountEndpoint: grpckit.NewClient(
+			conn, addr, "AttachUserToAccount",
+			_Encode_AttachUserToAccount_Request,
+			_Decode_AttachUserToAccount_Response,
+			pb.AttachUserToAccountResponse{},
+			opts...,
+		).Endpoint(),
+		BlockUserEndpoint: grpckit.NewClient(
+			conn, addr, "BlockUser",
+			_Encode_BlockUser_Request,
+			_Decode_BlockUser_Response,
+			pb.BlockUserResponse{},
+			opts...,
+		).Endpoint(),
 		CreateAccountEndpoint: grpckit.NewClient(
 			conn, addr, "CreateAccount",
 			_Encode_CreateAccount_Request,
@@ -51,6 +65,20 @@ func NewGRPCClient(conn *grpc.ClientConn, addr string, opts ...grpckit.ClientOpt
 			_Encode_CreateService_Request,
 			_Decode_CreateService_Response,
 			pb.CreateServiceResponse{},
+			opts...,
+		).Endpoint(),
+		CreateUserWithLoginPasswordEndpoint: grpckit.NewClient(
+			conn, addr, "CreateUserWithLoginPassword",
+			_Encode_CreateUserWithLoginPassword_Request,
+			_Decode_CreateUserWithLoginPassword_Response,
+			pb.CreateUserWithLoginPasswordResponse{},
+			opts...,
+		).Endpoint(),
+		CreateUserWithTelegramEndpoint: grpckit.NewClient(
+			conn, addr, "CreateUserWithTelegram",
+			_Encode_CreateUserWithTelegram_Request,
+			_Decode_CreateUserWithTelegram_Response,
+			pb.CreateUserWithTelegramResponse{},
 			opts...,
 		).Endpoint(),
 		DeletePermissionEndpoint: grpckit.NewClient(
@@ -88,6 +116,13 @@ func NewGRPCClient(conn *grpc.ClientConn, addr string, opts ...grpckit.ClientOpt
 			pb.GetAllServicesResponse{},
 			opts...,
 		).Endpoint(),
+		GetAllUsersEndpoint: grpckit.NewClient(
+			conn, addr, "GetAllUsers",
+			_Encode_GetAllUsers_Request,
+			_Decode_GetAllUsers_Response,
+			pb.GetAllUsersResponse{},
+			opts...,
+		).Endpoint(),
 		GetFilteredPermissionsEndpoint: grpckit.NewClient(
 			conn, addr, "GetFilteredPermissions",
 			_Encode_GetFilteredPermissions_Request,
@@ -107,6 +142,13 @@ func NewGRPCClient(conn *grpc.ClientConn, addr string, opts ...grpckit.ClientOpt
 			_Encode_GetService_Request,
 			_Decode_GetService_Response,
 			pb.GetServiceResponse{},
+			opts...,
+		).Endpoint(),
+		GetUserEndpoint: grpckit.NewClient(
+			conn, addr, "GetUser",
+			_Encode_GetUser_Request,
+			_Decode_GetUser_Response,
+			pb.GetUserResponse{},
 			opts...,
 		).Endpoint(),
 		GetUserPermissionsEndpoint: grpckit.NewClient(
@@ -130,11 +172,25 @@ func NewGRPCClient(conn *grpc.ClientConn, addr string, opts ...grpckit.ClientOpt
 			pb.RemoveUserPermissionResponse{},
 			opts...,
 		).Endpoint(),
+		UnblockUserEndpoint: grpckit.NewClient(
+			conn, addr, "UnblockUser",
+			_Encode_UnblockUser_Request,
+			_Decode_UnblockUser_Response,
+			pb.UnblockUserResponse{},
+			opts...,
+		).Endpoint(),
 		UpdateAccountEndpoint: grpckit.NewClient(
 			conn, addr, "UpdateAccount",
 			_Encode_UpdateAccount_Request,
 			_Decode_UpdateAccount_Response,
 			pb.UpdateAccountResponse{},
+			opts...,
+		).Endpoint(),
+		UpdateUserEndpoint: grpckit.NewClient(
+			conn, addr, "UpdateUser",
+			_Encode_UpdateUser_Request,
+			_Decode_UpdateUser_Response,
+			pb.UpdateUserResponse{},
 			opts...,
 		).Endpoint(),
 	}

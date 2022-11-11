@@ -5,9 +5,15 @@ option go_package = "./;proto";
 package proto;
 
 import "google/protobuf/empty.proto";
-import "google/protobuf/any.proto";
 
 service Mgmt {
+  rpc CreateUserWithLoginPassword (CreateUserWithLoginPasswordRequest) returns (CreateUserWithLoginPasswordResponse);
+  rpc CreateUserWithTelegram (CreateUserWithTelegramRequest) returns (CreateUserWithTelegramResponse);
+  rpc GetAllUsers (google.protobuf.Empty) returns (GetAllUsersResponse);
+  rpc GetUser (GetUserRequest) returns (GetUserResponse);
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
+  rpc BlockUser (BlockUserRequest) returns (BlockUserResponse);
+  rpc UnblockUser (UnblockUserRequest) returns (UnblockUserResponse);
   rpc CreateService (CreateServiceRequest) returns (CreateServiceResponse);
   rpc GetAllServices (google.protobuf.Empty) returns (GetAllServicesResponse);
   rpc GetService (GetServiceRequest) returns (GetServiceResponse);
@@ -16,7 +22,7 @@ service Mgmt {
   rpc GetAllAccounts (google.protobuf.Empty) returns (GetAllAccountsResponse);
   rpc GetAccount (GetAccountRequest) returns (GetAccountResponse);
   rpc UpdateAccount (UpdateAccountRequest) returns (UpdateAccountResponse);
-  rpc UpdateMapAccount (UpdateMapAccountRequest) returns (UpdateMapAccountResponse);
+  rpc AttachUserToAccount (AttachUserToAccountRequest) returns (AttachUserToAccountResponse);
   rpc AttachAccountToService (AttachAccountToServiceRequest) returns (AttachAccountToServiceResponse);
   rpc RemoveAccountFromService (RemoveAccountFromServiceRequest) returns (RemoveAccountFromServiceResponse);
   rpc CreatePermission (CreatePermissionRequest) returns (CreatePermissionResponse);
@@ -50,6 +56,83 @@ message Permission {
 
 message Access {
   uint64 access = 1;
+}
+
+message User {
+  uint32 id = 1;
+  string code = 2;
+  string name = 3;
+  string tg_name = 4;
+  uint64 tg_id = 5;
+  string tg_username = 6;
+  uint32 parent_id = 7;
+  uint32 account_id = 8;
+  bool blocked = 9;
+}
+
+message CreateUserWithLoginPasswordRequest {
+  string login = 1;
+  string pass = 2;
+}
+
+message CreateUserWithLoginPasswordResponse {
+  User user = 1;
+}
+
+message CreateUserWithTelegramRequest {
+  uint64 id = 1;
+  string name = 2;
+  string user_n = 3;
+}
+
+message CreateUserWithTelegramResponse {
+  User user = 1;
+}
+
+message GetAllUsersRequest {}
+
+message GetAllUsersResponse {
+  repeated User users = 1;
+}
+
+message GetUserRequest {
+  User user_req = 1;
+}
+
+message GetUserResponse {
+  User user = 1;
+}
+
+message UpdateUserRequest {
+  User user_req = 1;
+}
+
+message UpdateUserResponse {
+  User user = 1;
+}
+
+//message UpdateMapUserRequest {
+//  map<string, google.protobuf.Any> m = 1;
+//}
+
+message UpdateMapUserResponse {
+  bool ok = 1;
+}
+
+message BlockUserRequest {
+  uint32 user_id = 1;
+}
+
+message BlockUserResponse {
+  bool ok = 1;
+}
+
+message UnblockUserRequest {
+  uint32 user_id = 1;
+}
+
+message UnblockUserResponse {
+  bool ok = 1;
 }
 
 message CreateServiceRequest {
@@ -110,11 +193,20 @@ message UpdateAccountResponse {
   Account a = 1;
 }
 
-message UpdateMapAccountRequest {
-  map<string, google.protobuf.Any> m = 1;
-}
+//message UpdateMapAccountRequest {
+//  map<string, google.protobuf.Any> m = 1;
+//}
 
 message UpdateMapAccountResponse {
+  bool ok = 1;
+}
+
+message AttachUserToAccountRequest {
+  uint32 user_id = 1;
+  uint32 account_id = 2;
+}
+
+message AttachUserToAccountResponse {
   bool ok = 1;
 }
 

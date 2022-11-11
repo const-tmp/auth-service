@@ -11,17 +11,6 @@ type loggingMiddleware struct {
 	next Service
 }
 
-func (l loggingMiddleware) SetAccount(ctx context.Context, userID, accID uint32) (bool, error) {
-	l.l.Println("Method: SetAccount\tArgs:", userID, accID)
-	res, err := l.next.SetAccount(ctx, userID, accID)
-	if err != nil {
-		l.l.Println("Method: SetAccount\tError:", err)
-	} else {
-		l.l.Println("Method: SetAccount\tResult:", res)
-	}
-	return res, err
-}
-
 func NewLoggingMiddleware(l *log.Logger, next Service) Service {
 	return &loggingMiddleware{l: l, next: next}
 }
@@ -81,7 +70,7 @@ func (l loggingMiddleware) GetAll(ctx context.Context) ([]*types.User, error) {
 	return res, err
 }
 
-func (l loggingMiddleware) Get(ctx context.Context, user types.User) (*types.User, error) {
+func (l loggingMiddleware) Get(ctx context.Context, user *types.User) (*types.User, error) {
 	l.l.Println("Method: Get\tArgs:", user)
 	res, err := l.next.Get(ctx, user)
 	if err != nil {
@@ -92,7 +81,7 @@ func (l loggingMiddleware) Get(ctx context.Context, user types.User) (*types.Use
 	return res, err
 }
 
-func (l loggingMiddleware) Update(ctx context.Context, user types.User) (*types.User, error) {
+func (l loggingMiddleware) Update(ctx context.Context, user *types.User) (*types.User, error) {
 	l.l.Println("Method: Update\tArgs:", user)
 	res, err := l.next.Update(ctx, user)
 	if err != nil {

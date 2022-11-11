@@ -13,6 +13,7 @@ import (
 	"auth/permission"
 	"auth/pkg/types"
 	svcsrv "auth/service"
+	"auth/user"
 	"context"
 	"errors"
 	"fmt"
@@ -60,6 +61,7 @@ func main() {
 	//		os.Exit(1)
 	//	}
 	//}
+
 	err = db.Debug().AutoMigrate(&types.User{}, &types.Account{}, &types.Service{}, &types.Permission{})
 	if err != nil {
 		errorLogger.Log("migrate error:", err)
@@ -86,6 +88,7 @@ func main() {
 	permissionSvc := permission.New(db)
 	svcSvc := svcsrv.New(logger.New("[ service ]\t"), db)
 	accountSvc := account.NewLoggingMiddleware(logger.New("[ service ]\t"), account.New(db))
+	userSvc := user.NewLoggingMiddleware(logger.New("[ user ]\t"), user.New(db))
 	//jwtSvc := jwt.New(
 	//	logger.New("[ jwt ]\t"),
 	//	jwt2.SigningMethodES256,
@@ -98,7 +101,7 @@ func main() {
 	g.Go(func() error {
 		return InterruptHandler(ctx)
 	})
-	mgmtSvc := mgmt.New(logger.New("[ mgmt ]\t"), db, svcSvc, accountSvc, permissionSvc)
+	mgmtSvc := mgmt.New(logger.New("[ mgmt ]\t"), db, svcSvc, accountSvc, permissionSvc, userSvc)
 	mgmtSvc = mgmtservice.LoggingMiddleware(l)(mgmtSvc)
 	mgmtSvc = mgmtservice.ErrorLoggingMiddleware(l)(mgmtSvc)
 	mgmtSvc = mgmtservice.RecoveringMiddleware(l)(mgmtSvc)

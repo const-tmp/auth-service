@@ -5,6 +5,7 @@ import (
 	"auth/jwt"
 	"auth/logger"
 	"auth/mgmt"
+	"auth/permission"
 	"auth/pkg/types"
 	svcsrv "auth/service"
 	user2 "auth/user"
@@ -50,8 +51,11 @@ func (s *testSuite) SetupSuite() {
 	//	log.NewLogfmtLogger(os.Stdout),
 	//)(authz2.NewService(db)))
 
-	mgm := mgmt.New(logger.New("[ mgmt ]\t"), db)
-	svc := svcsrv.New(logger.New("[ auth ]\t"), db)
+	p := permission.New(db)
+
+	svc := svcsrv.New(logger.New("[ service ]\t"), db)
+
+	mgm := mgmt.New(logger.New("[ mgmt ]\t"), db, svc, acco, p, user)
 
 	var privateKey = make([]byte, 64)
 	_, err = rand.Read(privateKey)
@@ -68,7 +72,7 @@ func (s *testSuite) SetupSuite() {
 		key,
 	)
 
-	s.auth = New(logger.New("[ auth ]\t"), user, mgm, svc, acco, j)
+	s.auth = New(logger.New("[ auth ]\t"), mgm, j)
 
 	tables, err := db.Migrator().GetTables()
 	s.Require().NoError(err)

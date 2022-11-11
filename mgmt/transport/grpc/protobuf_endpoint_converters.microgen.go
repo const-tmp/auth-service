@@ -11,6 +11,73 @@ import (
 	empty "github.com/golang/protobuf/ptypes/empty"
 )
 
+func _Encode_CreateUserWithLoginPassword_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil CreateUserWithLoginPasswordRequest")
+	}
+	req := request.(*transport.CreateUserWithLoginPasswordRequest)
+	return &pb.CreateUserWithLoginPasswordRequest{
+		Login: req.Login,
+		Pass:  req.Pass,
+	}, nil
+}
+
+func _Encode_CreateUserWithTelegram_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil CreateUserWithTelegramRequest")
+	}
+	req := request.(*transport.CreateUserWithTelegramRequest)
+	return &pb.CreateUserWithTelegramRequest{
+		Id:    req.Id,
+		Name:  req.Name,
+		UserN: req.UserN,
+	}, nil
+}
+
+func _Encode_GetAllUsers_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	return &empty.Empty{}, nil
+}
+
+func _Encode_GetUser_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil GetUserRequest")
+	}
+	req := request.(*transport.GetUserRequest)
+	reqUserReq, err := PtrTypesUserToProto(req.UserReq)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetUserRequest{UserReq: reqUserReq}, nil
+}
+
+func _Encode_UpdateUser_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil UpdateUserRequest")
+	}
+	req := request.(*transport.UpdateUserRequest)
+	reqUserReq, err := PtrTypesUserToProto(req.UserReq)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.UpdateUserRequest{UserReq: reqUserReq}, nil
+}
+
+func _Encode_BlockUser_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil BlockUserRequest")
+	}
+	req := request.(*transport.BlockUserRequest)
+	return &pb.BlockUserRequest{UserId: req.UserId}, nil
+}
+
+func _Encode_UnblockUser_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil UnblockUserRequest")
+	}
+	req := request.(*transport.UnblockUserRequest)
+	return &pb.UnblockUserRequest{UserId: req.UserId}, nil
+}
+
 func _Encode_CreateService_Request(ctx context.Context, request interface{}) (interface{}, error) {
 	if request == nil {
 		return nil, errors.New("nil CreateServiceRequest")
@@ -73,6 +140,17 @@ func _Encode_UpdateAccount_Request(ctx context.Context, request interface{}) (in
 		return nil, err
 	}
 	return &pb.UpdateAccountRequest{Acc: reqAcc}, nil
+}
+
+func _Encode_AttachUserToAccount_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil AttachUserToAccountRequest")
+	}
+	req := request.(*transport.AttachUserToAccountRequest)
+	return &pb.AttachUserToAccountRequest{
+		AccountId: req.AccountId,
+		UserId:    req.UserId,
+	}, nil
 }
 
 func _Encode_AttachAccountToService_Request(ctx context.Context, request interface{}) (interface{}, error) {
@@ -187,6 +265,82 @@ func _Encode_RemoveUserPermission_Request(ctx context.Context, request interface
 	}, nil
 }
 
+func _Encode_CreateUserWithLoginPassword_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil CreateUserWithLoginPasswordResponse")
+	}
+	resp := response.(*transport.CreateUserWithLoginPasswordResponse)
+	respUser, err := PtrTypesUserToProto(resp.User)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.CreateUserWithLoginPasswordResponse{User: respUser}, nil
+}
+
+func _Encode_CreateUserWithTelegram_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil CreateUserWithTelegramResponse")
+	}
+	resp := response.(*transport.CreateUserWithTelegramResponse)
+	respUser, err := PtrTypesUserToProto(resp.User)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.CreateUserWithTelegramResponse{User: respUser}, nil
+}
+
+func _Encode_GetAllUsers_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil GetAllUsersResponse")
+	}
+	resp := response.(*transport.GetAllUsersResponse)
+	respUsers, err := ListPtrTypesUserToProto(resp.Users)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetAllUsersResponse{Users: respUsers}, nil
+}
+
+func _Encode_GetUser_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil GetUserResponse")
+	}
+	resp := response.(*transport.GetUserResponse)
+	respUser, err := PtrTypesUserToProto(resp.User)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetUserResponse{User: respUser}, nil
+}
+
+func _Encode_UpdateUser_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil UpdateUserResponse")
+	}
+	resp := response.(*transport.UpdateUserResponse)
+	respUser, err := PtrTypesUserToProto(resp.User)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.UpdateUserResponse{User: respUser}, nil
+}
+
+func _Encode_BlockUser_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil BlockUserResponse")
+	}
+	resp := response.(*transport.BlockUserResponse)
+	return &pb.BlockUserResponse{Ok: resp.Ok}, nil
+}
+
+func _Encode_UnblockUser_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil UnblockUserResponse")
+	}
+	resp := response.(*transport.UnblockUserResponse)
+	return &pb.UnblockUserResponse{Ok: resp.Ok}, nil
+}
+
 func _Encode_CreateService_Response(ctx context.Context, response interface{}) (interface{}, error) {
 	if response == nil {
 		return nil, errors.New("nil CreateServiceResponse")
@@ -281,6 +435,14 @@ func _Encode_UpdateAccount_Response(ctx context.Context, response interface{}) (
 		return nil, err
 	}
 	return &pb.UpdateAccountResponse{A: respA}, nil
+}
+
+func _Encode_AttachUserToAccount_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil AttachUserToAccountResponse")
+	}
+	resp := response.(*transport.AttachUserToAccountResponse)
+	return &pb.AttachUserToAccountResponse{Ok: resp.Ok}, nil
 }
 
 func _Encode_AttachAccountToService_Response(ctx context.Context, response interface{}) (interface{}, error) {
@@ -383,6 +545,73 @@ func _Encode_RemoveUserPermission_Response(ctx context.Context, response interfa
 	return &pb.RemoveUserPermissionResponse{Ok: resp.Ok}, nil
 }
 
+func _Decode_CreateUserWithLoginPassword_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil CreateUserWithLoginPasswordRequest")
+	}
+	req := request.(*pb.CreateUserWithLoginPasswordRequest)
+	return &transport.CreateUserWithLoginPasswordRequest{
+		Login: string(req.Login),
+		Pass:  string(req.Pass),
+	}, nil
+}
+
+func _Decode_CreateUserWithTelegram_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil CreateUserWithTelegramRequest")
+	}
+	req := request.(*pb.CreateUserWithTelegramRequest)
+	return &transport.CreateUserWithTelegramRequest{
+		Id:    uint64(req.Id),
+		Name:  string(req.Name),
+		UserN: string(req.UserN),
+	}, nil
+}
+
+func _Decode_GetAllUsers_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	return &empty.Empty{}, nil
+}
+
+func _Decode_GetUser_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil GetUserRequest")
+	}
+	req := request.(*pb.GetUserRequest)
+	reqUserReq, err := ProtoToPtrTypesUser(req.UserReq)
+	if err != nil {
+		return nil, err
+	}
+	return &transport.GetUserRequest{UserReq: reqUserReq}, nil
+}
+
+func _Decode_UpdateUser_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil UpdateUserRequest")
+	}
+	req := request.(*pb.UpdateUserRequest)
+	reqUserReq, err := ProtoToPtrTypesUser(req.UserReq)
+	if err != nil {
+		return nil, err
+	}
+	return &transport.UpdateUserRequest{UserReq: reqUserReq}, nil
+}
+
+func _Decode_BlockUser_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil BlockUserRequest")
+	}
+	req := request.(*pb.BlockUserRequest)
+	return &transport.BlockUserRequest{UserId: uint32(req.UserId)}, nil
+}
+
+func _Decode_UnblockUser_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil UnblockUserRequest")
+	}
+	req := request.(*pb.UnblockUserRequest)
+	return &transport.UnblockUserRequest{UserId: uint32(req.UserId)}, nil
+}
+
 func _Decode_CreateService_Request(ctx context.Context, request interface{}) (interface{}, error) {
 	if request == nil {
 		return nil, errors.New("nil CreateServiceRequest")
@@ -445,6 +674,17 @@ func _Decode_UpdateAccount_Request(ctx context.Context, request interface{}) (in
 		return nil, err
 	}
 	return &transport.UpdateAccountRequest{Acc: reqAcc}, nil
+}
+
+func _Decode_AttachUserToAccount_Request(ctx context.Context, request interface{}) (interface{}, error) {
+	if request == nil {
+		return nil, errors.New("nil AttachUserToAccountRequest")
+	}
+	req := request.(*pb.AttachUserToAccountRequest)
+	return &transport.AttachUserToAccountRequest{
+		AccountId: uint32(req.AccountId),
+		UserId:    uint32(req.UserId),
+	}, nil
 }
 
 func _Decode_AttachAccountToService_Request(ctx context.Context, request interface{}) (interface{}, error) {
@@ -559,6 +799,82 @@ func _Decode_RemoveUserPermission_Request(ctx context.Context, request interface
 	}, nil
 }
 
+func _Decode_CreateUserWithLoginPassword_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil CreateUserWithLoginPasswordResponse")
+	}
+	resp := response.(*pb.CreateUserWithLoginPasswordResponse)
+	respUser, err := ProtoToPtrTypesUser(resp.User)
+	if err != nil {
+		return nil, err
+	}
+	return &transport.CreateUserWithLoginPasswordResponse{User: respUser}, nil
+}
+
+func _Decode_CreateUserWithTelegram_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil CreateUserWithTelegramResponse")
+	}
+	resp := response.(*pb.CreateUserWithTelegramResponse)
+	respUser, err := ProtoToPtrTypesUser(resp.User)
+	if err != nil {
+		return nil, err
+	}
+	return &transport.CreateUserWithTelegramResponse{User: respUser}, nil
+}
+
+func _Decode_GetAllUsers_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil GetAllUsersResponse")
+	}
+	resp := response.(*pb.GetAllUsersResponse)
+	respUsers, err := ProtoToListPtrTypesUser(resp.Users)
+	if err != nil {
+		return nil, err
+	}
+	return &transport.GetAllUsersResponse{Users: respUsers}, nil
+}
+
+func _Decode_GetUser_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil GetUserResponse")
+	}
+	resp := response.(*pb.GetUserResponse)
+	respUser, err := ProtoToPtrTypesUser(resp.User)
+	if err != nil {
+		return nil, err
+	}
+	return &transport.GetUserResponse{User: respUser}, nil
+}
+
+func _Decode_UpdateUser_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil UpdateUserResponse")
+	}
+	resp := response.(*pb.UpdateUserResponse)
+	respUser, err := ProtoToPtrTypesUser(resp.User)
+	if err != nil {
+		return nil, err
+	}
+	return &transport.UpdateUserResponse{User: respUser}, nil
+}
+
+func _Decode_BlockUser_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil BlockUserResponse")
+	}
+	resp := response.(*pb.BlockUserResponse)
+	return &transport.BlockUserResponse{Ok: bool(resp.Ok)}, nil
+}
+
+func _Decode_UnblockUser_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil UnblockUserResponse")
+	}
+	resp := response.(*pb.UnblockUserResponse)
+	return &transport.UnblockUserResponse{Ok: bool(resp.Ok)}, nil
+}
+
 func _Decode_CreateService_Response(ctx context.Context, response interface{}) (interface{}, error) {
 	if response == nil {
 		return nil, errors.New("nil CreateServiceResponse")
@@ -653,6 +969,14 @@ func _Decode_UpdateAccount_Response(ctx context.Context, response interface{}) (
 		return nil, err
 	}
 	return &transport.UpdateAccountResponse{A: respA}, nil
+}
+
+func _Decode_AttachUserToAccount_Response(ctx context.Context, response interface{}) (interface{}, error) {
+	if response == nil {
+		return nil, errors.New("nil AttachUserToAccountResponse")
+	}
+	resp := response.(*pb.AttachUserToAccountResponse)
+	return &transport.AttachUserToAccountResponse{Ok: bool(resp.Ok)}, nil
 }
 
 func _Decode_AttachAccountToService_Response(ctx context.Context, response interface{}) (interface{}, error) {

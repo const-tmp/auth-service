@@ -106,9 +106,9 @@ func main() {
 	g.Go(func() error {
 		return InterruptHandler(ctx)
 	})
-	mgmtSvc := mgmt.New(logger.New("[ mgmt ]\t"), db, svcSvc, accountSvc, permissionSvc)
+	mgmtSvc := mgmt.New(logger.New("[ mgmt ]\t"), db, svcSvc, accountSvc, permissionSvc, userSvc)
 
-	svc := auth.New(logger.New("[ auth ]\t"), userSvc, mgmtSvc, svcSvc, accountSvc, jwtSvc)
+	svc := auth.New(logger.New("[ auth ]\t"), mgmtSvc, jwtSvc)
 	svc = authservice.LoggingMiddleware(l)(svc)              // Setup auth logging.
 	svc = authservice.ErrorLoggingMiddleware(l)(svc)         // Setup error logging.
 	svc = authservice.RecoveringMiddleware(errorLogger)(svc) // Setup auth recovering.

@@ -27,6 +27,48 @@ func CommonHTTPResponseEncoder(_ context.Context, w http.ResponseWriter, respons
 	return json.NewEncoder(w).Encode(response)
 }
 
+func _Decode_CreateUserWithLoginPassword_Request(_ context.Context, r *http.Request) (interface{}, error) {
+	var req transport.CreateUserWithLoginPasswordRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	return &req, err
+}
+
+func _Decode_CreateUserWithTelegram_Request(_ context.Context, r *http.Request) (interface{}, error) {
+	var req transport.CreateUserWithTelegramRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	return &req, err
+}
+
+func _Decode_GetAllUsers_Request(_ context.Context, r *http.Request) (interface{}, error) {
+	var req transport.GetAllUsersRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	return &req, err
+}
+
+func _Decode_GetUser_Request(_ context.Context, r *http.Request) (interface{}, error) {
+	var req transport.GetUserRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	return &req, err
+}
+
+func _Decode_UpdateUser_Request(_ context.Context, r *http.Request) (interface{}, error) {
+	var req transport.UpdateUserRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	return &req, err
+}
+
+func _Decode_BlockUser_Request(_ context.Context, r *http.Request) (interface{}, error) {
+	var req transport.BlockUserRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	return &req, err
+}
+
+func _Decode_UnblockUser_Request(_ context.Context, r *http.Request) (interface{}, error) {
+	var req transport.UnblockUserRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	return &req, err
+}
+
 func _Decode_CreateService_Request(_ context.Context, r *http.Request) (interface{}, error) {
 	var req transport.CreateServiceRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -71,6 +113,12 @@ func _Decode_GetAccount_Request(_ context.Context, r *http.Request) (interface{}
 
 func _Decode_UpdateAccount_Request(_ context.Context, r *http.Request) (interface{}, error) {
 	var req transport.UpdateAccountRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	return &req, err
+}
+
+func _Decode_AttachUserToAccount_Request(_ context.Context, r *http.Request) (interface{}, error) {
+	var req transport.AttachUserToAccountRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	return &req, err
 }
@@ -135,6 +183,48 @@ func _Decode_RemoveUserPermission_Request(_ context.Context, r *http.Request) (i
 	return &req, err
 }
 
+func _Decode_CreateUserWithLoginPassword_Response(_ context.Context, r *http.Response) (interface{}, error) {
+	var resp transport.CreateUserWithLoginPasswordResponse
+	err := json.NewDecoder(r.Body).Decode(&resp)
+	return &resp, err
+}
+
+func _Decode_CreateUserWithTelegram_Response(_ context.Context, r *http.Response) (interface{}, error) {
+	var resp transport.CreateUserWithTelegramResponse
+	err := json.NewDecoder(r.Body).Decode(&resp)
+	return &resp, err
+}
+
+func _Decode_GetAllUsers_Response(_ context.Context, r *http.Response) (interface{}, error) {
+	var resp transport.GetAllUsersResponse
+	err := json.NewDecoder(r.Body).Decode(&resp)
+	return &resp, err
+}
+
+func _Decode_GetUser_Response(_ context.Context, r *http.Response) (interface{}, error) {
+	var resp transport.GetUserResponse
+	err := json.NewDecoder(r.Body).Decode(&resp)
+	return &resp, err
+}
+
+func _Decode_UpdateUser_Response(_ context.Context, r *http.Response) (interface{}, error) {
+	var resp transport.UpdateUserResponse
+	err := json.NewDecoder(r.Body).Decode(&resp)
+	return &resp, err
+}
+
+func _Decode_BlockUser_Response(_ context.Context, r *http.Response) (interface{}, error) {
+	var resp transport.BlockUserResponse
+	err := json.NewDecoder(r.Body).Decode(&resp)
+	return &resp, err
+}
+
+func _Decode_UnblockUser_Response(_ context.Context, r *http.Response) (interface{}, error) {
+	var resp transport.UnblockUserResponse
+	err := json.NewDecoder(r.Body).Decode(&resp)
+	return &resp, err
+}
+
 func _Decode_CreateService_Response(_ context.Context, r *http.Response) (interface{}, error) {
 	var resp transport.CreateServiceResponse
 	err := json.NewDecoder(r.Body).Decode(&resp)
@@ -179,6 +269,12 @@ func _Decode_GetAccount_Response(_ context.Context, r *http.Response) (interface
 
 func _Decode_UpdateAccount_Response(_ context.Context, r *http.Response) (interface{}, error) {
 	var resp transport.UpdateAccountResponse
+	err := json.NewDecoder(r.Body).Decode(&resp)
+	return &resp, err
+}
+
+func _Decode_AttachUserToAccount_Response(_ context.Context, r *http.Response) (interface{}, error) {
+	var resp transport.AttachUserToAccountResponse
 	err := json.NewDecoder(r.Body).Decode(&resp)
 	return &resp, err
 }
@@ -243,6 +339,41 @@ func _Decode_RemoveUserPermission_Response(_ context.Context, r *http.Response) 
 	return &resp, err
 }
 
+func _Encode_CreateUserWithLoginPassword_Request(ctx context.Context, r *http.Request, request interface{}) error {
+	r.URL.Path = path.Join(r.URL.Path, "create-user-with-login-password")
+	return CommonHTTPRequestEncoder(ctx, r, request)
+}
+
+func _Encode_CreateUserWithTelegram_Request(ctx context.Context, r *http.Request, request interface{}) error {
+	r.URL.Path = path.Join(r.URL.Path, "create-user-with-telegram")
+	return CommonHTTPRequestEncoder(ctx, r, request)
+}
+
+func _Encode_GetAllUsers_Request(ctx context.Context, r *http.Request, request interface{}) error {
+	r.URL.Path = path.Join(r.URL.Path, "get-all-users")
+	return CommonHTTPRequestEncoder(ctx, r, request)
+}
+
+func _Encode_GetUser_Request(ctx context.Context, r *http.Request, request interface{}) error {
+	r.URL.Path = path.Join(r.URL.Path, "get-user")
+	return CommonHTTPRequestEncoder(ctx, r, request)
+}
+
+func _Encode_UpdateUser_Request(ctx context.Context, r *http.Request, request interface{}) error {
+	r.URL.Path = path.Join(r.URL.Path, "update-user")
+	return CommonHTTPRequestEncoder(ctx, r, request)
+}
+
+func _Encode_BlockUser_Request(ctx context.Context, r *http.Request, request interface{}) error {
+	r.URL.Path = path.Join(r.URL.Path, "block-user")
+	return CommonHTTPRequestEncoder(ctx, r, request)
+}
+
+func _Encode_UnblockUser_Request(ctx context.Context, r *http.Request, request interface{}) error {
+	r.URL.Path = path.Join(r.URL.Path, "unblock-user")
+	return CommonHTTPRequestEncoder(ctx, r, request)
+}
+
 func _Encode_CreateService_Request(ctx context.Context, r *http.Request, request interface{}) error {
 	r.URL.Path = path.Join(r.URL.Path, "create-service")
 	return CommonHTTPRequestEncoder(ctx, r, request)
@@ -280,6 +411,11 @@ func _Encode_GetAccount_Request(ctx context.Context, r *http.Request, request in
 
 func _Encode_UpdateAccount_Request(ctx context.Context, r *http.Request, request interface{}) error {
 	r.URL.Path = path.Join(r.URL.Path, "update-account")
+	return CommonHTTPRequestEncoder(ctx, r, request)
+}
+
+func _Encode_AttachUserToAccount_Request(ctx context.Context, r *http.Request, request interface{}) error {
+	r.URL.Path = path.Join(r.URL.Path, "attach-user-toaccount")
 	return CommonHTTPRequestEncoder(ctx, r, request)
 }
 
@@ -333,6 +469,34 @@ func _Encode_RemoveUserPermission_Request(ctx context.Context, r *http.Request, 
 	return CommonHTTPRequestEncoder(ctx, r, request)
 }
 
+func _Encode_CreateUserWithLoginPassword_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	return CommonHTTPResponseEncoder(ctx, w, response)
+}
+
+func _Encode_CreateUserWithTelegram_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	return CommonHTTPResponseEncoder(ctx, w, response)
+}
+
+func _Encode_GetAllUsers_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	return CommonHTTPResponseEncoder(ctx, w, response)
+}
+
+func _Encode_GetUser_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	return CommonHTTPResponseEncoder(ctx, w, response)
+}
+
+func _Encode_UpdateUser_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	return CommonHTTPResponseEncoder(ctx, w, response)
+}
+
+func _Encode_BlockUser_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	return CommonHTTPResponseEncoder(ctx, w, response)
+}
+
+func _Encode_UnblockUser_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	return CommonHTTPResponseEncoder(ctx, w, response)
+}
+
 func _Encode_CreateService_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return CommonHTTPResponseEncoder(ctx, w, response)
 }
@@ -362,6 +526,10 @@ func _Encode_GetAccount_Response(ctx context.Context, w http.ResponseWriter, res
 }
 
 func _Encode_UpdateAccount_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	return CommonHTTPResponseEncoder(ctx, w, response)
+}
+
+func _Encode_AttachUserToAccount_Response(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	return CommonHTTPResponseEncoder(ctx, w, response)
 }
 

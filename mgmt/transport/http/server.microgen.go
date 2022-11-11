@@ -11,6 +11,48 @@ import (
 
 func NewHTTPHandler(endpoints *transport.EndpointsSet, opts ...http.ServerOption) http1.Handler {
 	mux := mux.NewRouter()
+	mux.Methods("POST").Path("/create-user-with-login-password").Handler(
+		http.NewServer(
+			endpoints.CreateUserWithLoginPasswordEndpoint,
+			_Decode_CreateUserWithLoginPassword_Request,
+			_Encode_CreateUserWithLoginPassword_Response,
+			opts...))
+	mux.Methods("POST").Path("/create-user-with-telegram").Handler(
+		http.NewServer(
+			endpoints.CreateUserWithTelegramEndpoint,
+			_Decode_CreateUserWithTelegram_Request,
+			_Encode_CreateUserWithTelegram_Response,
+			opts...))
+	mux.Methods("POST").Path("/get-all-users").Handler(
+		http.NewServer(
+			endpoints.GetAllUsersEndpoint,
+			_Decode_GetAllUsers_Request,
+			_Encode_GetAllUsers_Response,
+			opts...))
+	mux.Methods("POST").Path("/get-user").Handler(
+		http.NewServer(
+			endpoints.GetUserEndpoint,
+			_Decode_GetUser_Request,
+			_Encode_GetUser_Response,
+			opts...))
+	mux.Methods("POST").Path("/update-user").Handler(
+		http.NewServer(
+			endpoints.UpdateUserEndpoint,
+			_Decode_UpdateUser_Request,
+			_Encode_UpdateUser_Response,
+			opts...))
+	mux.Methods("POST").Path("/block-user").Handler(
+		http.NewServer(
+			endpoints.BlockUserEndpoint,
+			_Decode_BlockUser_Request,
+			_Encode_BlockUser_Response,
+			opts...))
+	mux.Methods("POST").Path("/unblock-user").Handler(
+		http.NewServer(
+			endpoints.UnblockUserEndpoint,
+			_Decode_UnblockUser_Request,
+			_Encode_UnblockUser_Response,
+			opts...))
 	mux.Methods("POST").Path("/create-service").Handler(
 		http.NewServer(
 			endpoints.CreateServiceEndpoint,
@@ -58,6 +100,12 @@ func NewHTTPHandler(endpoints *transport.EndpointsSet, opts ...http.ServerOption
 			endpoints.UpdateAccountEndpoint,
 			_Decode_UpdateAccount_Request,
 			_Encode_UpdateAccount_Response,
+			opts...))
+	mux.Methods("POST").Path("/attach-user-toaccount").Handler(
+		http.NewServer(
+			endpoints.AttachUserToAccountEndpoint,
+			_Decode_AttachUserToAccount_Request,
+			_Encode_AttachUserToAccount_Response,
 			opts...))
 	mux.Methods("POST").Path("/attach-account-toservice").Handler(
 		http.NewServer(

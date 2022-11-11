@@ -7,6 +7,7 @@ import (
 	"auth/jwt"
 	"auth/logger"
 	"auth/mgmt"
+	"auth/permission"
 	"auth/pkg/types"
 	svcsrv "auth/service"
 	user2 "auth/user"
@@ -25,14 +26,14 @@ import (
 
 type testSuite struct {
 	suite.Suite
-	db    *gorm.DB
-	acco  account.Repo
-	user  user2.Service
-	authz authz2.Service
-	mgmt  mgmt.Service
-	svc   svcsrv.Service
-	auth  auth.Service
-	jwt   jwt.Service
+	db   *gorm.DB
+	acco account.Repo
+	user user2.Service
+	mgmt mgmt.Service
+	svc  svcsrv.Service
+	auth auth.Service
+	p    permission.Service
+	jwt  jwt.Service
 }
 
 func (s *testSuite) SetupSuite() {
@@ -52,11 +53,10 @@ func (s *testSuite) SetupSuite() {
 		account.New(db),
 	)
 	s.user = user2.NewLoggingMiddleware(logger.New("[ user ]\t"), user2.New(db))
+	s.p = permission.New(db)
 
-	s.authz = authz2.NewService(db)
-
-	s.mgmt = mgmt.New(logger.New("[ mgmt ]\t"), db)
 	s.svc = svcsrv.New(logger.New("[ auth ]\t"), db)
+	s.mgmt = mgmt.New(logger.New("[ mgmt ]\t"), db, s.svc, s.acco, s.p, s.user)
 
 	var privateKey = make([]byte, 64)
 	_, err = rand.Read(privateKey)
@@ -73,7 +73,7 @@ func (s *testSuite) SetupSuite() {
 		key,
 	)
 
-	s.auth = auth.New(logger.New("[ auth ]\t"), s.user, s.authz, s.mgmt, s.svc, s.acco, s.jwt)
+	s.auth = auth.New(logger.New("[ auth ]\t"), s.mgmt, s.jwt)
 
 	tables, err := s.db.Migrator().GetTables()
 	s.Require().NoError(err)
@@ -96,11 +96,7 @@ func (s *testSuite) TestAuth() {
 	var perms []*types.Permission
 	for name, access := range az.ByName() {
 		s.Run(fmt.Sprint("create permission", name, access, "auth:", svc.Name, svc.ID), func() {
-			v, err := s.authz.AddPermission(context.TODO(), &types.Permission{
-				ServiceID: svc.ID,
-				Name:      name,
-				Access:    access,
-			})
+			v, err := s.mgmt.CreatePermission(context.TODO(), svc.ID, name, &access)
 			s.Require().NoError(err)
 			s.T().Log(v.ID, v.Name, v.Access, v.ServiceID)
 			perms = append(perms, v)
@@ -121,12 +117,15 @@ func (s *testSuite) TestAuth() {
 
 				for _, perm := range perms {
 					s.Run("set user permissions", func() {
-						u, err := s.user.Get(context.TODO(), types.User{Name: fmt.Sprint("test", j)})
+						u, err := s.user.Get(context.TODO(), &types.User{Name: fmt.Sprint("test", j)})
 						s.Require().NoError(err)
 						s.T().Log(u.ID, u.AccountID, u.Name, u.Permissions)
-						v, err := s.authz.AddUserPermission(context.TODO(), perm.ID, u.ID)
+						v, err := s.mgmt.AddUserPermission(context.TODO(), &types.Permission{Model: types.Model{ID: perm.ID}}, u.ID)
 						s.Require().NoError(err)
 						s.Require().True(v)
+						u, err = s.user.Get(context.TODO(), &types.User{Name: fmt.Sprint("test", j)})
+						s.Require().NoError(err)
+						s.T().Log(u.ID, u.AccountID, u.Name, u.Permissions)
 					})
 				}
 
@@ -159,11 +158,7 @@ func (s *testSuite) TestService() {
 	for i, testService := range testServices {
 		for name, access := range az.ByName() {
 			s.Run(fmt.Sprint(i, testService.Name, "add permission", name), func() {
-				v, err := s.authz.AddPermission(context.TODO(), &types.Permission{
-					ServiceID: testService.ID,
-					Name:      name,
-					Access:    access,
-				})
+				v, err := s.mgmt.CreatePermission(context.TODO(), testService.ID, name, &access)
 				s.Require().NoError(err)
 				s.T().Logf("%d\t%+v", i, v)
 			})
@@ -174,7 +169,7 @@ func (s *testSuite) TestService() {
 
 	for i, svc := range testServices {
 		s.Run(fmt.Sprint(i, "get", svc.Name, "permissions"), func() {
-			v, err := s.authz.GetPermissions(context.TODO(), svc.ID)
+			v, err := s.mgmt.GetFilteredPermissions(context.TODO(), &types.Permission{ServiceID: svc.ID})
 			s.Require().NoError(err)
 			s.T().Logf("%d\t%+v", i, v)
 			testPermissions = append(testPermissions, v...)
@@ -195,11 +190,11 @@ func (s *testSuite) TestService() {
 
 	for _, user := range testUsers {
 		for _, svc := range testServices {
-			p, err := s.authz.GetPermissions(context.TODO(), svc.ID)
+			p, err := s.mgmt.GetFilteredPermissions(context.TODO(), &types.Permission{ServiceID: svc.ID})
 			s.Require().NoError(err)
 			for _, permission := range p {
 				s.Run(fmt.Sprint("add permission", user.ID, svc.ID, permission.Name), func() {
-					v, err := s.authz.AddUserPermission(context.TODO(), permission.ID, user.ID)
+					v, err := s.mgmt.AddUserPermission(context.TODO(), permission, user.ID)
 					s.Require().NoError(err)
 					s.T().Logf("%+v", v)
 				})
@@ -214,7 +209,7 @@ func (s *testSuite) TestService() {
 	for _, user := range testUsers {
 		for _, svc := range testServices {
 			s.Run(fmt.Sprint("get", user.Name, svc.Name, "permissions"), func() {
-				v, err := s.authz.GetUserPermissions(context.TODO(), &types.Permission{ServiceID: svc.ID}, user.ID)
+				v, err := s.mgmt.GetUserPermissions(context.TODO(), user.ID)
 				s.Require().NoError(err)
 				s.T().Log("user", user.Name, user.ID)
 				for i, permission := range v {
@@ -259,14 +254,12 @@ func (s *testSuite) TestPermissions() {
 	s.Require().NoError(err)
 	s.T().Log(svc)
 
-	p, err := s.authz.AddPermission(
-		context.TODO(),
-		&types.Permission{ServiceID: svc.ID, Name: "active", Access: az.ByName()["active"]},
-	)
+	a := az.ByName()["active"]
+	p, err := s.mgmt.CreatePermission(context.TODO(), svc.ID, "active", &a)
 	s.Require().NoError(err)
 	s.T().Log(p)
 
-	ps, err := s.authz.GetPermissions(context.TODO(), svc.ID)
+	ps, err := s.mgmt.GetFilteredPermissions(context.TODO(), &types.Permission{ServiceID: svc.ID})
 	s.Require().NoError(err)
 	s.T().Log(ps)
 

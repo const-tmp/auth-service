@@ -12,25 +12,33 @@ import (
 )
 
 type serviceServer struct {
-	pb.UnimplementedMgmtServer
-	createService            grpc.Handler
-	getAllServices           grpc.Handler
-	getService               grpc.Handler
-	createAccount            grpc.Handler
-	createAccountWithName    grpc.Handler
-	getAllAccounts           grpc.Handler
-	getAccount               grpc.Handler
-	updateAccount            grpc.Handler
-	attachAccountToService   grpc.Handler
-	removeAccountFromService grpc.Handler
-	createPermission         grpc.Handler
-	getPermission            grpc.Handler
-	getAllPermission         grpc.Handler
-	getFilteredPermissions   grpc.Handler
-	deletePermission         grpc.Handler
-	getUserPermissions       grpc.Handler
-	addUserPermission        grpc.Handler
-	removeUserPermission     grpc.Handler
+	pb.MgmtServer
+	createUserWithLoginPassword grpc.Handler
+	createUserWithTelegram      grpc.Handler
+	getAllUsers                 grpc.Handler
+	getUser                     grpc.Handler
+	updateUser                  grpc.Handler
+	blockUser                   grpc.Handler
+	unblockUser                 grpc.Handler
+	createService               grpc.Handler
+	getAllServices              grpc.Handler
+	getService                  grpc.Handler
+	createAccount               grpc.Handler
+	createAccountWithName       grpc.Handler
+	getAllAccounts              grpc.Handler
+	getAccount                  grpc.Handler
+	updateAccount               grpc.Handler
+	attachUserToAccount         grpc.Handler
+	attachAccountToService      grpc.Handler
+	removeAccountFromService    grpc.Handler
+	createPermission            grpc.Handler
+	getPermission               grpc.Handler
+	getAllPermission            grpc.Handler
+	getFilteredPermissions      grpc.Handler
+	deletePermission            grpc.Handler
+	getUserPermissions          grpc.Handler
+	addUserPermission           grpc.Handler
+	removeUserPermission        grpc.Handler
 }
 
 func NewGRPCServer(endpoints *transport.EndpointsSet, opts ...grpc.ServerOption) pb.MgmtServer {
@@ -45,6 +53,18 @@ func NewGRPCServer(endpoints *transport.EndpointsSet, opts ...grpc.ServerOption)
 			endpoints.AttachAccountToServiceEndpoint,
 			_Decode_AttachAccountToService_Request,
 			_Encode_AttachAccountToService_Response,
+			opts...,
+		),
+		attachUserToAccount: grpc.NewServer(
+			endpoints.AttachUserToAccountEndpoint,
+			_Decode_AttachUserToAccount_Request,
+			_Encode_AttachUserToAccount_Response,
+			opts...,
+		),
+		blockUser: grpc.NewServer(
+			endpoints.BlockUserEndpoint,
+			_Decode_BlockUser_Request,
+			_Encode_BlockUser_Response,
 			opts...,
 		),
 		createAccount: grpc.NewServer(
@@ -69,6 +89,18 @@ func NewGRPCServer(endpoints *transport.EndpointsSet, opts ...grpc.ServerOption)
 			endpoints.CreateServiceEndpoint,
 			_Decode_CreateService_Request,
 			_Encode_CreateService_Response,
+			opts...,
+		),
+		createUserWithLoginPassword: grpc.NewServer(
+			endpoints.CreateUserWithLoginPasswordEndpoint,
+			_Decode_CreateUserWithLoginPassword_Request,
+			_Encode_CreateUserWithLoginPassword_Response,
+			opts...,
+		),
+		createUserWithTelegram: grpc.NewServer(
+			endpoints.CreateUserWithTelegramEndpoint,
+			_Decode_CreateUserWithTelegram_Request,
+			_Encode_CreateUserWithTelegram_Response,
 			opts...,
 		),
 		deletePermission: grpc.NewServer(
@@ -101,6 +133,12 @@ func NewGRPCServer(endpoints *transport.EndpointsSet, opts ...grpc.ServerOption)
 			_Encode_GetAllServices_Response,
 			opts...,
 		),
+		getAllUsers: grpc.NewServer(
+			endpoints.GetAllUsersEndpoint,
+			_Decode_GetAllUsers_Request,
+			_Encode_GetAllUsers_Response,
+			opts...,
+		),
 		getFilteredPermissions: grpc.NewServer(
 			endpoints.GetFilteredPermissionsEndpoint,
 			_Decode_GetFilteredPermissions_Request,
@@ -117,6 +155,12 @@ func NewGRPCServer(endpoints *transport.EndpointsSet, opts ...grpc.ServerOption)
 			endpoints.GetServiceEndpoint,
 			_Decode_GetService_Request,
 			_Encode_GetService_Response,
+			opts...,
+		),
+		getUser: grpc.NewServer(
+			endpoints.GetUserEndpoint,
+			_Decode_GetUser_Request,
+			_Encode_GetUser_Response,
 			opts...,
 		),
 		getUserPermissions: grpc.NewServer(
@@ -137,10 +181,22 @@ func NewGRPCServer(endpoints *transport.EndpointsSet, opts ...grpc.ServerOption)
 			_Encode_RemoveUserPermission_Response,
 			opts...,
 		),
+		unblockUser: grpc.NewServer(
+			endpoints.UnblockUserEndpoint,
+			_Decode_UnblockUser_Request,
+			_Encode_UnblockUser_Response,
+			opts...,
+		),
 		updateAccount: grpc.NewServer(
 			endpoints.UpdateAccountEndpoint,
 			_Decode_UpdateAccount_Request,
 			_Encode_UpdateAccount_Response,
+			opts...,
+		),
+		updateUser: grpc.NewServer(
+			endpoints.UpdateUserEndpoint,
+			_Decode_UpdateUser_Request,
+			_Encode_UpdateUser_Response,
 			opts...,
 		),
 	}
@@ -156,6 +212,62 @@ func newManyToOneStreamServer(endpoint transport.ManyToOneStreamEndpoint) transp
 
 func newManyToManyStreamServer(endpoint transport.ManyToManyStreamEndpoint) transport.ManyToManyStreamEndpoint {
 	return endpoint
+}
+
+func (S *serviceServer) CreateUserWithLoginPassword(ctx context.Context, req *pb.CreateUserWithLoginPasswordRequest) (*pb.CreateUserWithLoginPasswordResponse, error) {
+	_, resp, err := S.createUserWithLoginPassword.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*pb.CreateUserWithLoginPasswordResponse), nil
+}
+
+func (S *serviceServer) CreateUserWithTelegram(ctx context.Context, req *pb.CreateUserWithTelegramRequest) (*pb.CreateUserWithTelegramResponse, error) {
+	_, resp, err := S.createUserWithTelegram.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*pb.CreateUserWithTelegramResponse), nil
+}
+
+func (S *serviceServer) GetAllUsers(ctx context.Context, req *empty.Empty) (*pb.GetAllUsersResponse, error) {
+	_, resp, err := S.getAllUsers.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*pb.GetAllUsersResponse), nil
+}
+
+func (S *serviceServer) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+	_, resp, err := S.getUser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*pb.GetUserResponse), nil
+}
+
+func (S *serviceServer) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
+	_, resp, err := S.updateUser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*pb.UpdateUserResponse), nil
+}
+
+func (S *serviceServer) BlockUser(ctx context.Context, req *pb.BlockUserRequest) (*pb.BlockUserResponse, error) {
+	_, resp, err := S.blockUser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*pb.BlockUserResponse), nil
+}
+
+func (S *serviceServer) UnblockUser(ctx context.Context, req *pb.UnblockUserRequest) (*pb.UnblockUserResponse, error) {
+	_, resp, err := S.unblockUser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*pb.UnblockUserResponse), nil
 }
 
 func (S *serviceServer) CreateService(ctx context.Context, req *pb.CreateServiceRequest) (*pb.CreateServiceResponse, error) {
@@ -220,6 +332,14 @@ func (S *serviceServer) UpdateAccount(ctx context.Context, req *pb.UpdateAccount
 		return nil, err
 	}
 	return resp.(*pb.UpdateAccountResponse), nil
+}
+
+func (S *serviceServer) AttachUserToAccount(ctx context.Context, req *pb.AttachUserToAccountRequest) (*pb.AttachUserToAccountResponse, error) {
+	_, resp, err := S.attachUserToAccount.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*pb.AttachUserToAccountResponse), nil
 }
 
 func (S *serviceServer) AttachAccountToService(ctx context.Context, req *pb.AttachAccountToServiceRequest) (*pb.AttachAccountToServiceResponse, error) {

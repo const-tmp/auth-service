@@ -5,14 +5,11 @@ package auth
 
 import (
 	"auth/access"
-	"auth/account"
 	"auth/jwt"
 	"auth/mgmt"
 	"auth/pkg/ec"
 	password2 "auth/pkg/password"
 	"auth/pkg/types"
-	svcsrv "auth/service"
-	"auth/user"
 	"context"
 	"errors"
 
@@ -31,22 +28,18 @@ type Service interface {
 
 type service struct {
 	logger *log.Logger
-	user   user.Service
-	//authz   authz.Service
-	mgmt    mgmt.Service
-	svc     svcsrv.Service
-	account account.Repo
-	jwt     jwt.Service
+	mgmt   mgmt.Service
+	jwt    jwt.Service
 }
 
-func New(logger *log.Logger, user user.Service, mgmt mgmt.Service, svc svcsrv.Service, account account.Repo, jwt jwt.Service) Service {
-	return &service{logger: logger, user: user, mgmt: mgmt, svc: svc, account: account, jwt: jwt}
+func New(logger *log.Logger, mgmt mgmt.Service, jwt jwt.Service) Service {
+	return &service{logger: logger, mgmt: mgmt, jwt: jwt}
 }
 
 var BadCreds = errors.New("bad credentials")
 
 func (s service) Register(ctx context.Context, login, password, service string, accountId uint32) (bool, error) {
-	u, err := s.user.Get(ctx, types.User{Name: login})
+	u, err := s.mgmt.GetUser(ctx, &types.User{Name: login})
 	if err == nil {
 		s.logger.Println("user", login, "exists:", u)
 		return false, nil
@@ -55,7 +48,7 @@ func (s service) Register(ctx context.Context, login, password, service string, 
 		return false, err
 	}
 
-	u, err = s.user.CreateWithLoginPassword(ctx, login, password)
+	u, err = s.mgmt.CreateUserWithLoginPassword(ctx, login, password)
 	if err != nil {
 		s.logger.Println("create user error:", err)
 		return false, err
@@ -64,16 +57,16 @@ func (s service) Register(ctx context.Context, login, password, service string, 
 	var a *types.Account
 
 	if accountId == 0 {
-		a, err = s.account.Create(ctx)
+		a, err = s.mgmt.CreateAccount(ctx)
 	} else {
-		a, err = s.account.Get(ctx, &types.Account{Model: types.Model{ID: accountId}})
+		a, err = s.mgmt.GetAccount(ctx, &types.Account{Model: types.Model{ID: accountId}})
 	}
 	if err != nil {
 		s.logger.Printf("get or create account %d error: %s", accountId, err)
 		return false, err
 	}
 
-	ok, err := s.user.SetAccount(ctx, u.ID, a.ID)
+	ok, err := s.mgmt.AttachUserToAccount(ctx, u.ID, a.ID)
 	if err != nil {
 		s.logger.Printf("set account %d error: %s", accountId, err)
 		return ok, err
@@ -81,7 +74,7 @@ func (s service) Register(ctx context.Context, login, password, service string, 
 
 	if service != "" {
 		var svc *types.Service
-		svc, err = s.svc.Get(ctx, &types.Service{Name: service})
+		svc, err = s.mgmt.GetService(ctx, &types.Service{Name: service})
 		if err != nil {
 			s.logger.Println("get auth error:", err)
 			return false, err
@@ -102,7 +95,7 @@ func (s service) Register(ctx context.Context, login, password, service string, 
 }
 
 func (s service) Login(ctx context.Context, login, password, service string) (*types.AccessToken, error) {
-	u, err := s.user.Get(ctx, types.User{Name: login})
+	u, err := s.mgmt.GetUser(ctx, &types.User{Name: login})
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			s.logger.Println("get user error", err)
@@ -118,7 +111,7 @@ func (s service) Login(ctx context.Context, login, password, service string) (*t
 		return nil, BadCreds
 	}
 
-	svc, err := s.svc.Get(ctx, &types.Service{Name: service})
+	svc, err := s.mgmt.GetService(ctx, &types.Service{Name: service})
 	if err != nil {
 		s.logger.Println("get auth error:", err)
 		return nil, err

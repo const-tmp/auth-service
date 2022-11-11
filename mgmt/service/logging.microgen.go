@@ -26,6 +26,103 @@ type loggingMiddleware struct {
 	next   service.Service
 }
 
+func (M loggingMiddleware) CreateUserWithLoginPassword(arg0 context.Context, arg1 string, arg2 string) (res0 *types.User, res1 error) {
+	defer func(begin time.Time) {
+		M.logger.Log(
+			"method", "CreateUserWithLoginPassword",
+			"message", "CreateUserWithLoginPassword called",
+			"request", logCreateUserWithLoginPasswordRequest{
+				Login: arg1,
+				Pass:  arg2,
+			},
+			"response", logCreateUserWithLoginPasswordResponse{User: res0},
+			"err", res1,
+			"took", time.Since(begin))
+	}(time.Now())
+	return M.next.CreateUserWithLoginPassword(arg0, arg1, arg2)
+}
+
+func (M loggingMiddleware) CreateUserWithTelegram(arg0 context.Context, arg1 uint64, arg2 string, arg3 string) (res0 *types.User, res1 error) {
+	defer func(begin time.Time) {
+		M.logger.Log(
+			"method", "CreateUserWithTelegram",
+			"message", "CreateUserWithTelegram called",
+			"request", logCreateUserWithTelegramRequest{
+				Id:    arg1,
+				Name:  arg2,
+				UserN: arg3,
+			},
+			"response", logCreateUserWithTelegramResponse{User: res0},
+			"err", res1,
+			"took", time.Since(begin))
+	}(time.Now())
+	return M.next.CreateUserWithTelegram(arg0, arg1, arg2, arg3)
+}
+
+func (M loggingMiddleware) GetAllUsers(arg0 context.Context) (res0 []*types.User, res1 error) {
+	defer func(begin time.Time) {
+		M.logger.Log(
+			"method", "GetAllUsers",
+			"message", "GetAllUsers called",
+			"response", logGetAllUsersResponse{Users: res0},
+			"err", res1,
+			"took", time.Since(begin))
+	}(time.Now())
+	return M.next.GetAllUsers(arg0)
+}
+
+func (M loggingMiddleware) GetUser(arg0 context.Context, arg1 *types.User) (res0 *types.User, res1 error) {
+	defer func(begin time.Time) {
+		M.logger.Log(
+			"method", "GetUser",
+			"message", "GetUser called",
+			"request", logGetUserRequest{UserReq: arg1},
+			"response", logGetUserResponse{User: res0},
+			"err", res1,
+			"took", time.Since(begin))
+	}(time.Now())
+	return M.next.GetUser(arg0, arg1)
+}
+
+func (M loggingMiddleware) UpdateUser(arg0 context.Context, arg1 *types.User) (res0 *types.User, res1 error) {
+	defer func(begin time.Time) {
+		M.logger.Log(
+			"method", "UpdateUser",
+			"message", "UpdateUser called",
+			"request", logUpdateUserRequest{UserReq: arg1},
+			"response", logUpdateUserResponse{User: res0},
+			"err", res1,
+			"took", time.Since(begin))
+	}(time.Now())
+	return M.next.UpdateUser(arg0, arg1)
+}
+
+func (M loggingMiddleware) BlockUser(arg0 context.Context, arg1 uint32) (res0 bool, res1 error) {
+	defer func(begin time.Time) {
+		M.logger.Log(
+			"method", "BlockUser",
+			"message", "BlockUser called",
+			"request", logBlockUserRequest{UserId: arg1},
+			"response", logBlockUserResponse{Ok: res0},
+			"err", res1,
+			"took", time.Since(begin))
+	}(time.Now())
+	return M.next.BlockUser(arg0, arg1)
+}
+
+func (M loggingMiddleware) UnblockUser(arg0 context.Context, arg1 uint32) (res0 bool, res1 error) {
+	defer func(begin time.Time) {
+		M.logger.Log(
+			"method", "UnblockUser",
+			"message", "UnblockUser called",
+			"request", logUnblockUserRequest{UserId: arg1},
+			"response", logUnblockUserResponse{Ok: res0},
+			"err", res1,
+			"took", time.Since(begin))
+	}(time.Now())
+	return M.next.UnblockUser(arg0, arg1)
+}
+
 func (M loggingMiddleware) CreateService(arg0 context.Context, arg1 string) (res0 *types.Service, res1 error) {
 	defer func(begin time.Time) {
 		M.logger.Log(
@@ -125,6 +222,22 @@ func (M loggingMiddleware) UpdateAccount(arg0 context.Context, arg1 *types.Accou
 			"took", time.Since(begin))
 	}(time.Now())
 	return M.next.UpdateAccount(arg0, arg1)
+}
+
+func (M loggingMiddleware) AttachUserToAccount(arg0 context.Context, arg1 uint32, arg2 uint32) (res0 bool, res1 error) {
+	defer func(begin time.Time) {
+		M.logger.Log(
+			"method", "AttachUserToAccount",
+			"message", "AttachUserToAccount called",
+			"request", logAttachUserToAccountRequest{
+				AccountId: arg2,
+				UserId:    arg1,
+			},
+			"response", logAttachUserToAccountResponse{Ok: res0},
+			"err", res1,
+			"took", time.Since(begin))
+	}(time.Now())
+	return M.next.AttachUserToAccount(arg0, arg1, arg2)
 }
 
 func (M loggingMiddleware) AttachAccountToService(arg0 context.Context, arg1 uint32, arg2 uint32) (res0 bool, res1 error) {
@@ -273,6 +386,48 @@ func (M loggingMiddleware) RemoveUserPermission(arg0 context.Context, arg1 uint3
 }
 
 type (
+	logCreateUserWithLoginPasswordRequest struct {
+		Login string
+		Pass  string
+	}
+	logCreateUserWithLoginPasswordResponse struct {
+		User *types.User
+	}
+	logCreateUserWithTelegramRequest struct {
+		Id    uint64
+		Name  string
+		UserN string
+	}
+	logCreateUserWithTelegramResponse struct {
+		User *types.User
+	}
+	logGetAllUsersResponse struct {
+		Users []*types.User
+	}
+	logGetUserRequest struct {
+		UserReq *types.User
+	}
+	logGetUserResponse struct {
+		User *types.User
+	}
+	logUpdateUserRequest struct {
+		UserReq *types.User
+	}
+	logUpdateUserResponse struct {
+		User *types.User
+	}
+	logBlockUserRequest struct {
+		UserId uint32
+	}
+	logBlockUserResponse struct {
+		Ok bool
+	}
+	logUnblockUserRequest struct {
+		UserId uint32
+	}
+	logUnblockUserResponse struct {
+		Ok bool
+	}
 	logCreateServiceRequest struct {
 		Name string
 	}
@@ -311,6 +466,13 @@ type (
 	}
 	logUpdateAccountResponse struct {
 		A *types.Account
+	}
+	logAttachUserToAccountRequest struct {
+		UserId    uint32
+		AccountId uint32
+	}
+	logAttachUserToAccountResponse struct {
+		Ok bool
 	}
 	logAttachAccountToServiceRequest struct {
 		ServiceId uint32

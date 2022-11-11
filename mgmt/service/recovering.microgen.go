@@ -26,6 +26,76 @@ type recoveringMiddleware struct {
 	next   service.Service
 }
 
+func (M recoveringMiddleware) CreateUserWithLoginPassword(ctx context.Context, login string, pass string) (user *types.User, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			M.logger.Log("method", "CreateUserWithLoginPassword", "message", r)
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return M.next.CreateUserWithLoginPassword(ctx, login, pass)
+}
+
+func (M recoveringMiddleware) CreateUserWithTelegram(ctx context.Context, id uint64, name string, userN string) (user *types.User, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			M.logger.Log("method", "CreateUserWithTelegram", "message", r)
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return M.next.CreateUserWithTelegram(ctx, id, name, userN)
+}
+
+func (M recoveringMiddleware) GetAllUsers(ctx context.Context) (users []*types.User, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			M.logger.Log("method", "GetAllUsers", "message", r)
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return M.next.GetAllUsers(ctx)
+}
+
+func (M recoveringMiddleware) GetUser(ctx context.Context, userReq *types.User) (user *types.User, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			M.logger.Log("method", "GetUser", "message", r)
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return M.next.GetUser(ctx, userReq)
+}
+
+func (M recoveringMiddleware) UpdateUser(ctx context.Context, userReq *types.User) (user *types.User, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			M.logger.Log("method", "UpdateUser", "message", r)
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return M.next.UpdateUser(ctx, userReq)
+}
+
+func (M recoveringMiddleware) BlockUser(ctx context.Context, userId uint32) (ok bool, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			M.logger.Log("method", "BlockUser", "message", r)
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return M.next.BlockUser(ctx, userId)
+}
+
+func (M recoveringMiddleware) UnblockUser(ctx context.Context, userId uint32) (ok bool, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			M.logger.Log("method", "UnblockUser", "message", r)
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return M.next.UnblockUser(ctx, userId)
+}
+
 func (M recoveringMiddleware) CreateService(ctx context.Context, name string) (s *types.Service, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -104,6 +174,16 @@ func (M recoveringMiddleware) UpdateAccount(ctx context.Context, acc *types.Acco
 		}
 	}()
 	return M.next.UpdateAccount(ctx, acc)
+}
+
+func (M recoveringMiddleware) AttachUserToAccount(ctx context.Context, userId uint32, accountId uint32) (ok bool, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			M.logger.Log("method", "AttachUserToAccount", "message", r)
+			err = fmt.Errorf("%v", r)
+		}
+	}()
+	return M.next.AttachUserToAccount(ctx, userId, accountId)
 }
 
 func (M recoveringMiddleware) AttachAccountToService(ctx context.Context, serviceId uint32, accountId uint32) (ok bool, err error) {

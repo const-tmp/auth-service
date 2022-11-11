@@ -25,6 +25,69 @@ type errorLoggingMiddleware struct {
 	next   service.Service
 }
 
+func (M errorLoggingMiddleware) CreateUserWithLoginPassword(ctx context.Context, login string, pass string) (user *types.User, err error) {
+	defer func() {
+		if err != nil {
+			M.logger.Log("method", "CreateUserWithLoginPassword", "message", err)
+		}
+	}()
+	return M.next.CreateUserWithLoginPassword(ctx, login, pass)
+}
+
+func (M errorLoggingMiddleware) CreateUserWithTelegram(ctx context.Context, id uint64, name string, userN string) (user *types.User, err error) {
+	defer func() {
+		if err != nil {
+			M.logger.Log("method", "CreateUserWithTelegram", "message", err)
+		}
+	}()
+	return M.next.CreateUserWithTelegram(ctx, id, name, userN)
+}
+
+func (M errorLoggingMiddleware) GetAllUsers(ctx context.Context) (users []*types.User, err error) {
+	defer func() {
+		if err != nil {
+			M.logger.Log("method", "GetAllUsers", "message", err)
+		}
+	}()
+	return M.next.GetAllUsers(ctx)
+}
+
+func (M errorLoggingMiddleware) GetUser(ctx context.Context, userReq *types.User) (user *types.User, err error) {
+	defer func() {
+		if err != nil {
+			M.logger.Log("method", "GetUser", "message", err)
+		}
+	}()
+	return M.next.GetUser(ctx, userReq)
+}
+
+func (M errorLoggingMiddleware) UpdateUser(ctx context.Context, userReq *types.User) (user *types.User, err error) {
+	defer func() {
+		if err != nil {
+			M.logger.Log("method", "UpdateUser", "message", err)
+		}
+	}()
+	return M.next.UpdateUser(ctx, userReq)
+}
+
+func (M errorLoggingMiddleware) BlockUser(ctx context.Context, userId uint32) (ok bool, err error) {
+	defer func() {
+		if err != nil {
+			M.logger.Log("method", "BlockUser", "message", err)
+		}
+	}()
+	return M.next.BlockUser(ctx, userId)
+}
+
+func (M errorLoggingMiddleware) UnblockUser(ctx context.Context, userId uint32) (ok bool, err error) {
+	defer func() {
+		if err != nil {
+			M.logger.Log("method", "UnblockUser", "message", err)
+		}
+	}()
+	return M.next.UnblockUser(ctx, userId)
+}
+
 func (M errorLoggingMiddleware) CreateService(ctx context.Context, name string) (s *types.Service, err error) {
 	defer func() {
 		if err != nil {
@@ -95,6 +158,15 @@ func (M errorLoggingMiddleware) UpdateAccount(ctx context.Context, acc *types.Ac
 		}
 	}()
 	return M.next.UpdateAccount(ctx, acc)
+}
+
+func (M errorLoggingMiddleware) AttachUserToAccount(ctx context.Context, userId uint32, accountId uint32) (ok bool, err error) {
+	defer func() {
+		if err != nil {
+			M.logger.Log("method", "AttachUserToAccount", "message", err)
+		}
+	}()
+	return M.next.AttachUserToAccount(ctx, userId, accountId)
 }
 
 func (M errorLoggingMiddleware) AttachAccountToService(ctx context.Context, serviceId uint32, accountId uint32) (ok bool, err error) {

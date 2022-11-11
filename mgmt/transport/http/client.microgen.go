@@ -22,6 +22,18 @@ func NewHTTPClient(u *url.URL, opts ...httpkit.ClientOption) transport.Endpoints
 			_Decode_AttachAccountToService_Response,
 			opts...,
 		).Endpoint(),
+		AttachUserToAccountEndpoint: httpkit.NewClient(
+			"POST", u,
+			_Encode_AttachUserToAccount_Request,
+			_Decode_AttachUserToAccount_Response,
+			opts...,
+		).Endpoint(),
+		BlockUserEndpoint: httpkit.NewClient(
+			"POST", u,
+			_Encode_BlockUser_Request,
+			_Decode_BlockUser_Response,
+			opts...,
+		).Endpoint(),
 		CreateAccountEndpoint: httpkit.NewClient(
 			"POST", u,
 			_Encode_CreateAccount_Request,
@@ -44,6 +56,18 @@ func NewHTTPClient(u *url.URL, opts ...httpkit.ClientOption) transport.Endpoints
 			"POST", u,
 			_Encode_CreateService_Request,
 			_Decode_CreateService_Response,
+			opts...,
+		).Endpoint(),
+		CreateUserWithLoginPasswordEndpoint: httpkit.NewClient(
+			"POST", u,
+			_Encode_CreateUserWithLoginPassword_Request,
+			_Decode_CreateUserWithLoginPassword_Response,
+			opts...,
+		).Endpoint(),
+		CreateUserWithTelegramEndpoint: httpkit.NewClient(
+			"POST", u,
+			_Encode_CreateUserWithTelegram_Request,
+			_Decode_CreateUserWithTelegram_Response,
 			opts...,
 		).Endpoint(),
 		DeletePermissionEndpoint: httpkit.NewClient(
@@ -76,6 +100,12 @@ func NewHTTPClient(u *url.URL, opts ...httpkit.ClientOption) transport.Endpoints
 			_Decode_GetAllServices_Response,
 			opts...,
 		).Endpoint(),
+		GetAllUsersEndpoint: httpkit.NewClient(
+			"POST", u,
+			_Encode_GetAllUsers_Request,
+			_Decode_GetAllUsers_Response,
+			opts...,
+		).Endpoint(),
 		GetFilteredPermissionsEndpoint: httpkit.NewClient(
 			"POST", u,
 			_Encode_GetFilteredPermissions_Request,
@@ -92,6 +122,12 @@ func NewHTTPClient(u *url.URL, opts ...httpkit.ClientOption) transport.Endpoints
 			"POST", u,
 			_Encode_GetService_Request,
 			_Decode_GetService_Response,
+			opts...,
+		).Endpoint(),
+		GetUserEndpoint: httpkit.NewClient(
+			"POST", u,
+			_Encode_GetUser_Request,
+			_Decode_GetUser_Response,
 			opts...,
 		).Endpoint(),
 		GetUserPermissionsEndpoint: httpkit.NewClient(
@@ -112,10 +148,22 @@ func NewHTTPClient(u *url.URL, opts ...httpkit.ClientOption) transport.Endpoints
 			_Decode_RemoveUserPermission_Response,
 			opts...,
 		).Endpoint(),
+		UnblockUserEndpoint: httpkit.NewClient(
+			"POST", u,
+			_Encode_UnblockUser_Request,
+			_Decode_UnblockUser_Response,
+			opts...,
+		).Endpoint(),
 		UpdateAccountEndpoint: httpkit.NewClient(
 			"POST", u,
 			_Encode_UpdateAccount_Request,
 			_Decode_UpdateAccount_Response,
+			opts...,
+		).Endpoint(),
+		UpdateUserEndpoint: httpkit.NewClient(
+			"POST", u,
+			_Encode_UpdateUser_Request,
+			_Decode_UpdateUser_Response,
 			opts...,
 		).Endpoint(),
 	}

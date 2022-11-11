@@ -12,13 +12,6 @@ type repo struct {
 	DB *gorm.DB
 }
 
-func (r repo) SetAccount(ctx context.Context, userID, accID uint32) (bool, error) {
-	err := r.DB.Debug().WithContext(ctx).
-		Model(&types.User{Model: types.Model{ID: userID}}).
-		Update("account_id", accID).Error
-	return err == nil, err
-}
-
 func New(db *gorm.DB) Service {
 	return &repo{DB: db}
 }
@@ -41,9 +34,9 @@ func (r repo) CreateWithTelegram(ctx context.Context, id uint64, name, userN str
 	return &u, err
 }
 
-func (r repo) Get(ctx context.Context, user types.User) (*types.User, error) {
+func (r repo) Get(ctx context.Context, user *types.User) (*types.User, error) {
 	err := r.DB.Debug().WithContext(ctx).Where(&user).Preload("Permissions").First(&user).Error
-	return &user, err
+	return user, err
 }
 
 func (r repo) GetAll(ctx context.Context) ([]*types.User, error) {
@@ -52,9 +45,9 @@ func (r repo) GetAll(ctx context.Context) ([]*types.User, error) {
 	return v, err
 }
 
-func (r repo) Update(ctx context.Context, user types.User) (*types.User, error) {
+func (r repo) Update(ctx context.Context, user *types.User) (*types.User, error) {
 	err := r.DB.Debug().WithContext(ctx).Updates(&user).Error
-	return &user, err
+	return user, err
 }
 
 func (r repo) UpdateMap(ctx context.Context, m map[string]interface{}) (bool, error) {

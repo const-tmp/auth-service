@@ -8,6 +8,57 @@ import (
 )
 
 type (
+	CreateUserWithLoginPasswordRequest struct {
+		Login string `json:"login"`
+		Pass  string `json:"pass"`
+	}
+	CreateUserWithLoginPasswordResponse struct {
+		User *types.User `json:"user"`
+	}
+
+	CreateUserWithTelegramRequest struct {
+		Id    uint64 `json:"id"`
+		Name  string `json:"name"`
+		UserN string `json:"user_n"`
+	}
+	CreateUserWithTelegramResponse struct {
+		User *types.User `json:"user"`
+	}
+
+	// Formal exchange type, please do not delete.
+	GetAllUsersRequest  struct{}
+	GetAllUsersResponse struct {
+		Users []*types.User `json:"users"`
+	}
+
+	GetUserRequest struct {
+		UserReq *types.User `json:"user_req"`
+	}
+	GetUserResponse struct {
+		User *types.User `json:"user"`
+	}
+
+	UpdateUserRequest struct {
+		UserReq *types.User `json:"user_req"`
+	}
+	UpdateUserResponse struct {
+		User *types.User `json:"user"`
+	}
+
+	BlockUserRequest struct {
+		UserId uint32 `json:"user_id"`
+	}
+	BlockUserResponse struct {
+		Ok bool `json:"ok"`
+	}
+
+	UnblockUserRequest struct {
+		UserId uint32 `json:"user_id"`
+	}
+	UnblockUserResponse struct {
+		Ok bool `json:"ok"`
+	}
+
 	CreateServiceRequest struct {
 		Name string `json:"name"`
 	}
@@ -59,6 +110,14 @@ type (
 	}
 	UpdateAccountResponse struct {
 		A *types.Account `json:"a"`
+	}
+
+	AttachUserToAccountRequest struct {
+		UserId    uint32 `json:"user_id"`
+		AccountId uint32 `json:"account_id"`
+	}
+	AttachUserToAccountResponse struct {
+		Ok bool `json:"ok"`
 	}
 
 	AttachAccountToServiceRequest struct {

@@ -12,22 +12,30 @@ type ManyToManyStreamEndpoint func(stream interface{}) error
 type ManyToOneStreamEndpoint func(stream interface{}) error
 
 type EndpointsSet struct {
-	CreateServiceEndpoint            endpoint.Endpoint
-	GetAllServicesEndpoint           endpoint.Endpoint
-	GetServiceEndpoint               endpoint.Endpoint
-	CreateAccountEndpoint            endpoint.Endpoint
-	CreateAccountWithNameEndpoint    endpoint.Endpoint
-	GetAllAccountsEndpoint           endpoint.Endpoint
-	GetAccountEndpoint               endpoint.Endpoint
-	UpdateAccountEndpoint            endpoint.Endpoint
-	AttachAccountToServiceEndpoint   endpoint.Endpoint
-	RemoveAccountFromServiceEndpoint endpoint.Endpoint
-	CreatePermissionEndpoint         endpoint.Endpoint
-	GetPermissionEndpoint            endpoint.Endpoint
-	GetAllPermissionEndpoint         endpoint.Endpoint
-	GetFilteredPermissionsEndpoint   endpoint.Endpoint
-	DeletePermissionEndpoint         endpoint.Endpoint
-	GetUserPermissionsEndpoint       endpoint.Endpoint
-	AddUserPermissionEndpoint        endpoint.Endpoint
-	RemoveUserPermissionEndpoint     endpoint.Endpoint
+	CreateUserWithLoginPasswordEndpoint endpoint.Endpoint
+	CreateUserWithTelegramEndpoint      endpoint.Endpoint
+	GetAllUsersEndpoint                 endpoint.Endpoint
+	GetUserEndpoint                     endpoint.Endpoint
+	UpdateUserEndpoint                  endpoint.Endpoint
+	BlockUserEndpoint                   endpoint.Endpoint
+	UnblockUserEndpoint                 endpoint.Endpoint
+	CreateServiceEndpoint               endpoint.Endpoint
+	GetAllServicesEndpoint              endpoint.Endpoint
+	GetServiceEndpoint                  endpoint.Endpoint
+	CreateAccountEndpoint               endpoint.Endpoint
+	CreateAccountWithNameEndpoint       endpoint.Endpoint
+	GetAllAccountsEndpoint              endpoint.Endpoint
+	GetAccountEndpoint                  endpoint.Endpoint
+	UpdateAccountEndpoint               endpoint.Endpoint
+	AttachUserToAccountEndpoint         endpoint.Endpoint
+	AttachAccountToServiceEndpoint      endpoint.Endpoint
+	RemoveAccountFromServiceEndpoint    endpoint.Endpoint
+	CreatePermissionEndpoint            endpoint.Endpoint
+	GetPermissionEndpoint               endpoint.Endpoint
+	GetAllPermissionEndpoint            endpoint.Endpoint
+	GetFilteredPermissionsEndpoint      endpoint.Endpoint
+	DeletePermissionEndpoint            endpoint.Endpoint
+	GetUserPermissionsEndpoint          endpoint.Endpoint
+	AddUserPermissionEndpoint           endpoint.Endpoint
+	RemoveUserPermissionEndpoint        endpoint.Endpoint
 }

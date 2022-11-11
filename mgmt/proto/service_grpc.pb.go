@@ -23,6 +23,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MgmtClient interface {
+	CreateUserWithLoginPassword(ctx context.Context, in *CreateUserWithLoginPasswordRequest, opts ...grpc.CallOption) (*CreateUserWithLoginPasswordResponse, error)
+	CreateUserWithTelegram(ctx context.Context, in *CreateUserWithTelegramRequest, opts ...grpc.CallOption) (*CreateUserWithTelegramResponse, error)
+	GetAllUsers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllUsersResponse, error)
+	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
+	BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*BlockUserResponse, error)
+	UnblockUser(ctx context.Context, in *UnblockUserRequest, opts ...grpc.CallOption) (*UnblockUserResponse, error)
 	CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*CreateServiceResponse, error)
 	GetAllServices(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllServicesResponse, error)
 	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error)
@@ -31,7 +38,7 @@ type MgmtClient interface {
 	GetAllAccounts(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllAccountsResponse, error)
 	GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*GetAccountResponse, error)
 	UpdateAccount(ctx context.Context, in *UpdateAccountRequest, opts ...grpc.CallOption) (*UpdateAccountResponse, error)
-	UpdateMapAccount(ctx context.Context, in *UpdateMapAccountRequest, opts ...grpc.CallOption) (*UpdateMapAccountResponse, error)
+	AttachUserToAccount(ctx context.Context, in *AttachUserToAccountRequest, opts ...grpc.CallOption) (*AttachUserToAccountResponse, error)
 	AttachAccountToService(ctx context.Context, in *AttachAccountToServiceRequest, opts ...grpc.CallOption) (*AttachAccountToServiceResponse, error)
 	RemoveAccountFromService(ctx context.Context, in *RemoveAccountFromServiceRequest, opts ...grpc.CallOption) (*RemoveAccountFromServiceResponse, error)
 	CreatePermission(ctx context.Context, in *CreatePermissionRequest, opts ...grpc.CallOption) (*CreatePermissionResponse, error)
@@ -50,6 +57,69 @@ type mgmtClient struct {
 
 func NewMgmtClient(cc grpc.ClientConnInterface) MgmtClient {
 	return &mgmtClient{cc}
+}
+
+func (c *mgmtClient) CreateUserWithLoginPassword(ctx context.Context, in *CreateUserWithLoginPasswordRequest, opts ...grpc.CallOption) (*CreateUserWithLoginPasswordResponse, error) {
+	out := new(CreateUserWithLoginPasswordResponse)
+	err := c.cc.Invoke(ctx, "/proto.Mgmt/CreateUserWithLoginPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mgmtClient) CreateUserWithTelegram(ctx context.Context, in *CreateUserWithTelegramRequest, opts ...grpc.CallOption) (*CreateUserWithTelegramResponse, error) {
+	out := new(CreateUserWithTelegramResponse)
+	err := c.cc.Invoke(ctx, "/proto.Mgmt/CreateUserWithTelegram", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mgmtClient) GetAllUsers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllUsersResponse, error) {
+	out := new(GetAllUsersResponse)
+	err := c.cc.Invoke(ctx, "/proto.Mgmt/GetAllUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mgmtClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
+	out := new(GetUserResponse)
+	err := c.cc.Invoke(ctx, "/proto.Mgmt/GetUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mgmtClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
+	out := new(UpdateUserResponse)
+	err := c.cc.Invoke(ctx, "/proto.Mgmt/UpdateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mgmtClient) BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*BlockUserResponse, error) {
+	out := new(BlockUserResponse)
+	err := c.cc.Invoke(ctx, "/proto.Mgmt/BlockUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mgmtClient) UnblockUser(ctx context.Context, in *UnblockUserRequest, opts ...grpc.CallOption) (*UnblockUserResponse, error) {
+	out := new(UnblockUserResponse)
+	err := c.cc.Invoke(ctx, "/proto.Mgmt/UnblockUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *mgmtClient) CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*CreateServiceResponse, error) {
@@ -124,9 +194,9 @@ func (c *mgmtClient) UpdateAccount(ctx context.Context, in *UpdateAccountRequest
 	return out, nil
 }
 
-func (c *mgmtClient) UpdateMapAccount(ctx context.Context, in *UpdateMapAccountRequest, opts ...grpc.CallOption) (*UpdateMapAccountResponse, error) {
-	out := new(UpdateMapAccountResponse)
-	err := c.cc.Invoke(ctx, "/proto.Mgmt/UpdateMapAccount", in, out, opts...)
+func (c *mgmtClient) AttachUserToAccount(ctx context.Context, in *AttachUserToAccountRequest, opts ...grpc.CallOption) (*AttachUserToAccountResponse, error) {
+	out := new(AttachUserToAccountResponse)
+	err := c.cc.Invoke(ctx, "/proto.Mgmt/AttachUserToAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -227,6 +297,13 @@ func (c *mgmtClient) RemoveUserPermission(ctx context.Context, in *RemoveUserPer
 // All implementations must embed UnimplementedMgmtServer
 // for forward compatibility
 type MgmtServer interface {
+	CreateUserWithLoginPassword(context.Context, *CreateUserWithLoginPasswordRequest) (*CreateUserWithLoginPasswordResponse, error)
+	CreateUserWithTelegram(context.Context, *CreateUserWithTelegramRequest) (*CreateUserWithTelegramResponse, error)
+	GetAllUsers(context.Context, *emptypb.Empty) (*GetAllUsersResponse, error)
+	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
+	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
+	BlockUser(context.Context, *BlockUserRequest) (*BlockUserResponse, error)
+	UnblockUser(context.Context, *UnblockUserRequest) (*UnblockUserResponse, error)
 	CreateService(context.Context, *CreateServiceRequest) (*CreateServiceResponse, error)
 	GetAllServices(context.Context, *emptypb.Empty) (*GetAllServicesResponse, error)
 	GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error)
@@ -235,7 +312,7 @@ type MgmtServer interface {
 	GetAllAccounts(context.Context, *emptypb.Empty) (*GetAllAccountsResponse, error)
 	GetAccount(context.Context, *GetAccountRequest) (*GetAccountResponse, error)
 	UpdateAccount(context.Context, *UpdateAccountRequest) (*UpdateAccountResponse, error)
-	UpdateMapAccount(context.Context, *UpdateMapAccountRequest) (*UpdateMapAccountResponse, error)
+	AttachUserToAccount(context.Context, *AttachUserToAccountRequest) (*AttachUserToAccountResponse, error)
 	AttachAccountToService(context.Context, *AttachAccountToServiceRequest) (*AttachAccountToServiceResponse, error)
 	RemoveAccountFromService(context.Context, *RemoveAccountFromServiceRequest) (*RemoveAccountFromServiceResponse, error)
 	CreatePermission(context.Context, *CreatePermissionRequest) (*CreatePermissionResponse, error)
@@ -253,6 +330,27 @@ type MgmtServer interface {
 type UnimplementedMgmtServer struct {
 }
 
+func (UnimplementedMgmtServer) CreateUserWithLoginPassword(context.Context, *CreateUserWithLoginPasswordRequest) (*CreateUserWithLoginPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUserWithLoginPassword not implemented")
+}
+func (UnimplementedMgmtServer) CreateUserWithTelegram(context.Context, *CreateUserWithTelegramRequest) (*CreateUserWithTelegramResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUserWithTelegram not implemented")
+}
+func (UnimplementedMgmtServer) GetAllUsers(context.Context, *emptypb.Empty) (*GetAllUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllUsers not implemented")
+}
+func (UnimplementedMgmtServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+}
+func (UnimplementedMgmtServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+}
+func (UnimplementedMgmtServer) BlockUser(context.Context, *BlockUserRequest) (*BlockUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlockUser not implemented")
+}
+func (UnimplementedMgmtServer) UnblockUser(context.Context, *UnblockUserRequest) (*UnblockUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnblockUser not implemented")
+}
 func (UnimplementedMgmtServer) CreateService(context.Context, *CreateServiceRequest) (*CreateServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateService not implemented")
 }
@@ -277,8 +375,8 @@ func (UnimplementedMgmtServer) GetAccount(context.Context, *GetAccountRequest) (
 func (UnimplementedMgmtServer) UpdateAccount(context.Context, *UpdateAccountRequest) (*UpdateAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccount not implemented")
 }
-func (UnimplementedMgmtServer) UpdateMapAccount(context.Context, *UpdateMapAccountRequest) (*UpdateMapAccountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateMapAccount not implemented")
+func (UnimplementedMgmtServer) AttachUserToAccount(context.Context, *AttachUserToAccountRequest) (*AttachUserToAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AttachUserToAccount not implemented")
 }
 func (UnimplementedMgmtServer) AttachAccountToService(context.Context, *AttachAccountToServiceRequest) (*AttachAccountToServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AttachAccountToService not implemented")
@@ -321,6 +419,132 @@ type UnsafeMgmtServer interface {
 
 func RegisterMgmtServer(s grpc.ServiceRegistrar, srv MgmtServer) {
 	s.RegisterService(&Mgmt_ServiceDesc, srv)
+}
+
+func _Mgmt_CreateUserWithLoginPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserWithLoginPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MgmtServer).CreateUserWithLoginPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Mgmt/CreateUserWithLoginPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MgmtServer).CreateUserWithLoginPassword(ctx, req.(*CreateUserWithLoginPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Mgmt_CreateUserWithTelegram_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserWithTelegramRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MgmtServer).CreateUserWithTelegram(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Mgmt/CreateUserWithTelegram",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MgmtServer).CreateUserWithTelegram(ctx, req.(*CreateUserWithTelegramRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Mgmt_GetAllUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MgmtServer).GetAllUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Mgmt/GetAllUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MgmtServer).GetAllUsers(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Mgmt_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MgmtServer).GetUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Mgmt/GetUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MgmtServer).GetUser(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Mgmt_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MgmtServer).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Mgmt/UpdateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MgmtServer).UpdateUser(ctx, req.(*UpdateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Mgmt_BlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MgmtServer).BlockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Mgmt/BlockUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MgmtServer).BlockUser(ctx, req.(*BlockUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Mgmt_UnblockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnblockUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MgmtServer).UnblockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Mgmt/UnblockUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MgmtServer).UnblockUser(ctx, req.(*UnblockUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Mgmt_CreateService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -467,20 +691,20 @@ func _Mgmt_UpdateAccount_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Mgmt_UpdateMapAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateMapAccountRequest)
+func _Mgmt_AttachUserToAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AttachUserToAccountRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MgmtServer).UpdateMapAccount(ctx, in)
+		return srv.(MgmtServer).AttachUserToAccount(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.Mgmt/UpdateMapAccount",
+		FullMethod: "/proto.Mgmt/AttachUserToAccount",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MgmtServer).UpdateMapAccount(ctx, req.(*UpdateMapAccountRequest))
+		return srv.(MgmtServer).AttachUserToAccount(ctx, req.(*AttachUserToAccountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -673,6 +897,34 @@ var Mgmt_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*MgmtServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "CreateUserWithLoginPassword",
+			Handler:    _Mgmt_CreateUserWithLoginPassword_Handler,
+		},
+		{
+			MethodName: "CreateUserWithTelegram",
+			Handler:    _Mgmt_CreateUserWithTelegram_Handler,
+		},
+		{
+			MethodName: "GetAllUsers",
+			Handler:    _Mgmt_GetAllUsers_Handler,
+		},
+		{
+			MethodName: "GetUser",
+			Handler:    _Mgmt_GetUser_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _Mgmt_UpdateUser_Handler,
+		},
+		{
+			MethodName: "BlockUser",
+			Handler:    _Mgmt_BlockUser_Handler,
+		},
+		{
+			MethodName: "UnblockUser",
+			Handler:    _Mgmt_UnblockUser_Handler,
+		},
+		{
 			MethodName: "CreateService",
 			Handler:    _Mgmt_CreateService_Handler,
 		},
@@ -705,8 +957,8 @@ var Mgmt_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Mgmt_UpdateAccount_Handler,
 		},
 		{
-			MethodName: "UpdateMapAccount",
-			Handler:    _Mgmt_UpdateMapAccount_Handler,
+			MethodName: "AttachUserToAccount",
+			Handler:    _Mgmt_AttachUserToAccount_Handler,
 		},
 		{
 			MethodName: "AttachAccountToService",

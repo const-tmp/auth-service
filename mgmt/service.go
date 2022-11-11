@@ -9,7 +9,9 @@ import (
 	"auth/permission"
 	"auth/pkg/types"
 	svcsrv "auth/service"
+	"auth/user"
 	"context"
+	"fmt"
 	"gorm.io/gorm"
 	"log"
 )
@@ -17,6 +19,14 @@ import (
 // @microgen middleware, logging, http, grpc, recovering, error-logging
 // @protobuf auth/mgmt/proto
 type Service interface {
+	CreateUserWithLoginPassword(ctx context.Context, login, pass string) (user *types.User, err error)
+	CreateUserWithTelegram(ctx context.Context, id uint64, name, userN string) (user *types.User, err error)
+	GetAllUsers(ctx context.Context) (users []*types.User, err error)
+	GetUser(ctx context.Context, userReq *types.User) (user *types.User, err error)
+	UpdateUser(ctx context.Context, userReq *types.User) (user *types.User, err error)
+	BlockUser(ctx context.Context, userId uint32) (ok bool, err error)
+	UnblockUser(ctx context.Context, userId uint32) (ok bool, err error)
+
 	CreateService(ctx context.Context, name string) (s *types.Service, err error)
 	GetAllServices(ctx context.Context) (ss []*types.Service, err error)
 	GetService(ctx context.Context, svc *types.Service) (s *types.Service, err error)
@@ -26,8 +36,8 @@ type Service interface {
 	GetAllAccounts(ctx context.Context) (as []*types.Account, err error)
 	GetAccount(ctx context.Context, acc *types.Account) (a *types.Account, err error)
 	UpdateAccount(ctx context.Context, acc *types.Account) (a *types.Account, err error)
-	//UpdateMapAccount(ctx context.Context, m map[string]interface{}) (ok bool, err error)
-	//
+
+	AttachUserToAccount(ctx context.Context, userId, accountId uint32) (ok bool, err error)
 	AttachAccountToService(ctx context.Context, serviceId, accountId uint32) (ok bool, err error)
 	RemoveAccountFromService(ctx context.Context, serviceId, accountId uint32) (ok bool, err error)
 
@@ -46,13 +56,46 @@ type service struct {
 	svcsrv.Service
 	db         *gorm.DB
 	l          *log.Logger
+	user       user.Service
 	permission permission.Service
 	svc        svcsrv.Service
 	acc        account.Repo
 }
 
-func New(l *log.Logger, db *gorm.DB, svc svcsrv.Service, acc account.Repo, p permission.Service) Service {
-	return &service{l: l, db: db, svc: svc, acc: acc, permission: p}
+func New(l *log.Logger, db *gorm.DB, svc svcsrv.Service, acc account.Repo, p permission.Service, u user.Service) Service {
+	return &service{l: l, db: db, svc: svc, acc: acc, permission: p, user: u}
+}
+
+func (s service) CreateUserWithLoginPassword(ctx context.Context, login, pass string) (*types.User, error) {
+	return s.user.CreateWithLoginPassword(ctx, login, pass)
+}
+
+func (s service) CreateUserWithTelegram(ctx context.Context, id uint64, name, userN string) (*types.User, error) {
+	return s.user.CreateWithTelegram(ctx, id, name, userN)
+}
+
+func (s service) GetAllUsers(ctx context.Context) ([]*types.User, error) {
+	return s.user.GetAll(ctx)
+}
+
+func (s service) GetUser(ctx context.Context, user *types.User) (*types.User, error) {
+	return s.user.Get(ctx, user)
+}
+
+func (s service) UpdateUser(ctx context.Context, user *types.User) (*types.User, error) {
+	return s.user.Update(ctx, user)
+}
+
+func (s service) UpdateMapUser(ctx context.Context, m map[string]interface{}) (bool, error) {
+	return s.user.UpdateMap(ctx, m)
+}
+
+func (s service) BlockUser(ctx context.Context, userId uint32) (bool, error) {
+	return s.user.Block(ctx, userId)
+}
+
+func (s service) UnblockUser(ctx context.Context, userId uint32) (bool, error) {
+	return s.user.Unblock(ctx, userId)
 }
 
 func (s service) CreateService(ctx context.Context, name string) (*types.Service, error) {
@@ -128,6 +171,10 @@ func (s service) GetUserPermissions(ctx context.Context, userId uint32) (permiss
 		Model(&types.User{Model: types.Model{ID: userId}}).
 		Association("Permissions").
 		Find(&permissions)
+	s.l.Println("user permissions:")
+	for i, p := range permissions {
+		s.l.Println(i, p)
+	}
 	return
 }
 
@@ -135,7 +182,7 @@ func (s service) AddUserPermission(ctx context.Context, p *types.Permission, use
 	err = s.db.Debug().WithContext(ctx).
 		Model(&types.User{Model: types.Model{ID: userId}}).
 		Association("Permissions").
-		Append(&p)
+		Append(&types.Permission{Model: types.Model{ID: p.ID}})
 	ok = err == nil
 	return
 }
@@ -147,6 +194,20 @@ func (s service) RemoveUserPermission(ctx context.Context, permId, userId uint32
 		Delete(&types.Permission{Model: types.Model{ID: permId}})
 	ok = err == nil
 	return
+}
+
+func (s service) AttachUserToAccount(ctx context.Context, userId, accountId uint32) (ok bool, err error) {
+	u, err := s.user.Update(ctx, &types.User{Model: types.Model{ID: userId}, AccountID: accountId})
+	if err != nil {
+		return false, err
+	}
+	if u.ID != userId {
+		return false, fmt.Errorf("updated userID=%d != userID=%d", u.ID, userId)
+	}
+	if u.AccountID != accountId {
+		return false, fmt.Errorf("updated accountID=%d != accountID=%d", u.AccountID, accountId)
+	}
+	return true, nil
 }
 
 func (s service) AttachAccountToService(ctx context.Context, serviceId, accountID uint32) (bool, error) {
