@@ -1,5 +1,5 @@
 //go:generate protoc --proto_path=proto --go_out=proto --go_opt=paths=source_relative --go-grpc_out=proto --go-grpc_opt=paths=source_relative proto/service.proto
-//go:generate microgen -file service.go -package auth/pkg/auth -out . -pb-go proto/service.pb.go
+//go:generate microgen -file service.go -package github.com/nullc4t/auth-service/pkg/auth -out . -pb-go proto/service.pb.go
 
 package auth
 
@@ -20,7 +20,7 @@ import (
 )
 
 // @microgen middleware, logging, http, grpc, recovering, error-logging
-// @protobuf auth/auth/proto
+// @protobuf github.com/nullc4t/auth-service/pkg/auth/proto
 type Service interface {
 	Register(ctx context.Context, login, password, service string, accountId uint32) (ok bool, err error)
 	Login(ctx context.Context, login, password, service string) (token *types.AccessToken, err error)
